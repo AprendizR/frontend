@@ -1,0 +1,25 @@
+:root {
+  /* Backgrounds */
+  --bg-primary: #0b1220;
+  --bg-secondary: #0f172a;
+  --bg-card: #1e293b;
+
+  /* Brand */
+  --brand-orange: #f97316;
+  --brand-orange-hover: #ea580c;
+  --brand-green: #22c55e;
+
+  /* Text */
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+
+  /* Status */
+  --success: #22c55e;
+  --warning: #f97316;
+  --danger: #ef4444;
+
+  /* UI */
+  --border: #334155;
+  --radius: 12px;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}

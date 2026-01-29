@@ -1,0 +1,27 @@
+import type { Ocorrencia, CriarOcorrenciaDTO } from "../types/Ocorrencias"
+
+const API_BASE = "http://localhost:8080/api/ocorrencias"
+
+export async function registrarOcorrencia(dto: CriarOcorrenciaDTO): Promise<Ocorrencia> {
+  const response = await fetch(API_BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto)
+  })
+
+  if (!response.ok) {
+    throw new Error("Erro ao registrar ocorrência")
+  }
+
+  return response.json()
+}
+
+export async function listarOcorrenciasPorOS(ordemServico: number): Promise<Ocorrencia[]> {
+  const response = await fetch(`${API_BASE}/os/${ordemServico}`)
+
+  if (!response.ok) {
+    throw new Error("Erro ao listar ocorrências")
+  }
+
+  return response.json()
+}
