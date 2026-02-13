@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { criarNotaFiscal } from "../api/notaFiscalApi"
+import { criarNotaFiscal } from "../../api/notaFiscalApi"
 import toast from "react-hot-toast"
 
 type Props = {

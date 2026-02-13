@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { criarVeiculo } from "../api/veiculoApi"
+import { criarVeiculo } from "../../api/veiculoApi"
 
 type Props = {
   onCadastrado: () => void

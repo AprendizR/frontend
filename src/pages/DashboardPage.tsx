@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { buscarEstatisticas } from "../api/dashboardApi"
 import type { Estatisticas } from "../types/Dashboard"
-import { StatCard } from "../components/StatCard"
-import { ShortcutCard } from "../components/ShortcutCard"
+import { StatCard } from "../components/Inicio/StatCard"
 import toast from "react-hot-toast"
 
 export function DashboardPage() {
@@ -90,34 +89,7 @@ export function DashboardPage() {
             Erro ao carregar dados
           </div>
         )}
-      </section>
-
-      {/* ATALHOS */}
-      <section>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">⚡ Ações Rápidas</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <ShortcutCard
-            title="Cargas"
-            description="Gerencie rotas e entregas"
-            icon="🚚"
-          />
-          <ShortcutCard
-            title="Notas Fiscais"
-            description="Controle de documentos"
-            icon="📄"
-          />
-          <ShortcutCard
-            title="Motoristas"
-            description="Cadastro de motoristas"
-            icon="👤"
-          />
-          <ShortcutCard
-            title="Veículos"
-            description="Frota disponível"
-            icon="🚛"
-          />
-        </div>
-      </section>
+      </section>      
     </main>
   )
 }

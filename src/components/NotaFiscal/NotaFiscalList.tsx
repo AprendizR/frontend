@@ -1,4 +1,4 @@
-import type { NotaFiscal } from "../types/NotaFiscal"
+import type { NotaFiscal } from "../../types/NotaFiscal"
 
 type Props = {
   notaFiscal: NotaFiscal[]

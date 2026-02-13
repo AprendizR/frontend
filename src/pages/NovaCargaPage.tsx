@@ -1,4 +1,4 @@
-import { CargaForm } from "../components/CargaForm"
+import { CargaForm } from "../components/Carga/CargaForm"
 
 export function NovaCargaPage() {
   return (

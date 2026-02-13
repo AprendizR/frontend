@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react"
 import { buscarCargas } from "../api/cargaApi"
 import type { CargaResumo } from "../types/Carga"
-import { CargaResumoCard } from "../components/CargaResumoCard"
-import { CargaForm } from "../components/CargaForm"  // ⭐ NOVO
+import { CargaResumoCard } from "../components/Carga/CargaResumoCard"
+import { CargaForm } from "../components/Carga/CargaForm" 
 import toast from "react-hot-toast"
 
 export function CargasPage() {

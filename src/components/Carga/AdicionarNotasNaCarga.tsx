@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
-import { listarNotasDisponiveis } from "../api/notaFiscalApi"
-import { adicionarNotasNaCarga } from "../api/cargaApi"
-import type { NotaFiscal } from "../types/NotaFiscal"
+import { listarNotasDisponiveis } from "../../api/notaFiscalApi"
+import { adicionarNotasNaCarga } from "../../api/cargaApi"
+import type { NotaFiscal } from "../../types/NotaFiscal"
 import toast from "react-hot-toast"
 
 type Props = {

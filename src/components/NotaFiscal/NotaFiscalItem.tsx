@@ -1,8 +1,8 @@
 // components/NotaFiscalItem.tsx
 import { useState, useEffect } from "react"
-import { registrarOcorrencia, listarOcorrenciasPorOS } from "../api/ocorrenciaApi"
-import type { NotaFiscalResumo } from "../types/Carga"
-import type { SubtipoOcorrencia, Ocorrencia } from "../types/Ocorrencias"
+import { registrarOcorrencia, listarOcorrenciasPorOS } from "../../api/ocorrenciaApi"
+import type { NotaFiscalResumo } from "../../types/Carga"
+import type { SubtipoOcorrencia, Ocorrencia } from "../../types/Ocorrencias"
 import toast from "react-hot-toast"
 
 type Props = {

@@ -1,5 +1,5 @@
-import type { Motorista } from "../types/Motorista"
-import { formatCPF, formatTelefone } from "../utils/format"
+import type { Motorista } from "../../types/Motorista"
+import { formatCPF, formatTelefone } from "../../utils/format"
 
 type Props = {
   motoristas: Motorista[]

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import type { NotaFiscal } from "../types/NotaFiscal"
 import { listarNotas } from "../api/notaFiscalApi"
-import { NotaFiscalForm } from "../components/NotaFiscalForm"
-import { NotaFiscalList } from "../components/NotaFiscalList"
+import { NotaFiscalForm } from "../components/NotaFiscal/NotaFiscalForm"
+import { NotaFiscalList } from "../components/NotaFiscal/NotaFiscalList"
 
 
 export function NotaFiscalPage() {

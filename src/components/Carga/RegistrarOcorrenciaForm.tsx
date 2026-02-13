@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { registrarOcorrencia } from "../api/ocorrenciaApi"
-import type { SubtipoOcorrencia } from "../types/Ocorrencias"
+import { registrarOcorrencia } from "../../api/ocorrenciaApi"
+import type { SubtipoOcorrencia } from "../../types/Ocorrencias"
 import toast from "react-hot-toast"
 
 type Props = {

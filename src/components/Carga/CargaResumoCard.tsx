@@ -1,9 +1,9 @@
 import { useState } from "react"
-import { buscarCargaDetalhada } from "../api/cargaApi"
-import type { CargaResumo, CargaDetalhada } from "../types/Carga"
-import { StatusBadge } from "./StatusBadge"
-import { NotaFiscalItem } from "./NotaFiscalItem"
-import { AdicionarNotasNaCarga } from "./AdicionarNotasNaCarga"
+import { buscarCargaDetalhada } from "../../api/cargaApi"
+import type { CargaResumo, CargaDetalhada } from "../../types/Carga"
+import { StatusBadge } from "../Inicio/StatusBadge"
+import { NotaFiscalItem } from "../NotaFiscal/NotaFiscalItem"
+import { AdicionarNotasNaCarga } from "../Carga/AdicionarNotasNaCarga"
 import toast from "react-hot-toast"
 
 type Props = {

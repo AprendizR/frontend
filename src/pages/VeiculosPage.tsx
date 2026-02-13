@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { listarVeiculos } from "../api/veiculoApi"
 import type { Veiculo } from "../types/Veiculo"
-import { VeiculoForm } from "../components/VeiculoForm"
-import { VeiculoList } from "../components/VeiculoList"
+import { VeiculoForm } from "../components/Veiculo/VeiculoForm"
+import { VeiculoList } from "../components/Veiculo/VeiculoList"
 
 export function VeiculosPage() {
   const [veiculos, setVeiculos] = useState<Veiculo[]>([])

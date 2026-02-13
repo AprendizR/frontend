@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { criarMotorista } from "../api/motoristaApi"
-import { formatCPF, formatTelefone, removeMascara } from "../utils/format"
+import { criarMotorista } from "../../api/motoristaApi"
+import { formatCPF, formatTelefone, removeMascara } from "../../utils/format"
 import toast from "react-hot-toast"
 
 type Props = {

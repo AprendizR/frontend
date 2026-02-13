@@ -1,8 +1,8 @@
 // components/CargaForm.tsx
 import { useState } from "react"
-import { criarCarga } from "../api/cargaApi"
-import { MotoristaAutocomplete } from "./MotoristaAutocomplete"
-import { VeiculoAutocomplete } from "./VeiculoAutocomplete"
+import { criarCarga } from "../../api/cargaApi"
+import { MotoristaAutocomplete } from "../Motorista/MotoristaAutocomplete"
+import { VeiculoAutocomplete } from "../Veiculo/VeiculoAutocomplete"
 import toast from "react-hot-toast"
 
 type Props = {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { listarMotoristas } from "../api/motoristaApi"
 import type { Motorista } from "../types/Motorista"
-import { MotoristaForm } from "../components/MotoristaForm"
-import { MotoristaList } from "../components/MotoristaList"
+import { MotoristaForm } from "../components/Motorista/MotoristaForm"
+import { MotoristaList } from "../components/Motorista/MotoristaList"
 
 export function MotoristasPage() {
   const [motoristas, setMotoristas] = useState<Motorista[]>([])

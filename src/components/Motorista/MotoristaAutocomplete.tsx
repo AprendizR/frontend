@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { buscarMotoristas } from "../api/motoristaApi"
-import type { Motorista } from "../types/Motorista"
+import { buscarMotoristas } from "../../api/motoristaApi"
+import type { Motorista } from "../../types/Motorista"
 
 type Props = {
   onSelecionar: (id: number) => void

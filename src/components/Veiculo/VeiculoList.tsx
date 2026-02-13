@@ -1,4 +1,4 @@
-import type { Veiculo } from "../types/Veiculo"
+import type { Veiculo } from "../../types/Veiculo"
 
 type Props = {
   veiculos: Veiculo[]
