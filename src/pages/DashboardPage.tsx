@@ -36,7 +36,6 @@ export function DashboardPage() {
         </p>
       </section>
 
-      {/* ESTATÍSTICAS */}
       <section>
         <h2 className="text-2xl font-bold text-gray-800 mb-4">📊 Estatísticas</h2>
         

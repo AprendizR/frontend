@@ -65,13 +65,7 @@ export function CargasPage() {
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        {cargas.map(carga => (
-          <CargaResumoCard
-            key={carga.id}
-            carga={carga}
-            onAtualizar={carregarCargas}
-          />
-        ))}
+        {cargas.map(carga => (<CargaResumoCard key={carga.id} carga={carga} onAtualizar={carregarCargas}/>))}
       </div>
     </div>
   )

@@ -37,7 +37,6 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
       
     
       setNumero("")      
-      setRemetente("")
       setDestinatario("")
       setCep("")
       setCidade("")
@@ -58,62 +57,14 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
       <h3>Cadastrar Nota Fiscal</h3>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-        <input
-          placeholder="Número da NF "
-          value={numero}
-          onChange={e => setNumero(e.target.value)}
-          
-        />
-
-        <input
-          placeholder="Remetente "
-          value={remetente}
-          onChange={e => setRemetente(e.target.value)}
-          
-        />
-
-        <input
-          placeholder="Destinatário "
-          value={destinatario}
-          onChange={e => setDestinatario(e.target.value)}
-          
-        />
-
-        <input
-          placeholder="CEP "
-          value={cep}
-          onChange={e => setCep(e.target.value)}
-          
-        />
-
-        <input
-          placeholder="Cidade "
-          value={cidade}
-          onChange={e => setCidade(e.target.value)}
-          
-        />
-
-        <input
-          placeholder="Endereço (Rua, Número) "
-          value={endereco}
-          onChange={e => setEndereco(e.target.value)}
-          
-        />        
-
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Valor (opcional)"
-          value={valor}
-          onChange={e => setValor(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Volumes (opcional)"
-          value={volumes}
-          onChange={e => setVolumes(e.target.value)}
-        />
+        <input placeholder="Número da NF "value={numero} onChange={e => setNumero(e.target.value)}/>
+        <input placeholder="Remetente " value={remetente} onChange={e => setRemetente(e.target.value)}/>
+        <input placeholder="Destinatário " value={destinatario} onChange={e => setDestinatario(e.target.value)}/>
+        <input placeholder="CEP " value={cep} onChange={e => setCep(e.target.value)}/>
+        <input placeholder="Cidade " value={cidade} onChange={e => setCidade(e.target.value)}/>
+        <input placeholder="Endereço (Rua, Número) " value={endereco} onChange={e => setEndereco(e.target.value)}/>
+        <input type="number" step="0.01" placeholder="Valor (opcional)" value={valor} onChange={e => setValor(e.target.value)}/>
+        <input type="number" placeholder="Volumes (opcional)" value={volumes} onChange={e => setVolumes(e.target.value)}/>
       </div>
 
       <button type="submit" disabled={loading}>

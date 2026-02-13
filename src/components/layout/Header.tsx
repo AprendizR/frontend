@@ -4,7 +4,6 @@ export function Header() {
   return (
     <header className="header">
       <div className="header-content">
-        {/* Logo */}
         <div className="logo">
           <div className="logo-icon">🚚</div>
           <div>
@@ -16,13 +15,13 @@ export function Header() {
 
         {/* Navegação */}
         <nav className="nav">
-          <NavLink to="/" end>
-            Início
-          </NavLink>
+          <NavLink to="/" end>Início</NavLink>
           <NavLink to="/cargas">Cargas</NavLink>
           <NavLink to="/notas-fiscais">Notas Fiscais</NavLink>
           <NavLink to="/motoristas">Motoristas</NavLink>
           <NavLink to="/veiculos">Veículos</NavLink>
+          <NavLink to="/clientes">Clientes</NavLink>
+          <NavLink to="/ocorrencias">Ocorrências</NavLink>
         </nav>
       </div>
     </header>

@@ -6,6 +6,7 @@ import { Header } from "./components/layout/Header"
 import { OcorrenciasPage } from "./pages/OcorrenciasPage"
 import { MotoristasPage } from "./pages/MotoristasPage"
 import { VeiculosPage } from "./pages/VeiculosPage"
+import { ClientePage } from "./pages/ClientePage"
 
 export default function App() {
   return (
@@ -19,7 +20,9 @@ export default function App() {
           <Route path="/notas-fiscais" element={<NotaFiscalPage />} />          
           <Route path ="/motoristas" element={<MotoristasPage/>}/>
           <Route path="/veiculos" element={<VeiculosPage/>}/>
+          <Route path="/clientes" element={<ClientePage/>}/>
           <Route path="/ocorrencias" element={<OcorrenciasPage/>}/>
+          
         </Routes>
       </main>
     </BrowserRouter>
