@@ -49,3 +49,13 @@ export async function adicionarNotasNaCarga(cargaId: number, notasIds: number[])
     await adicionarNotaNaCarga(cargaId, notaId)
   }
 }
+
+export async function excluirNotaDaCarga(cargaId: number, notaId: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/cargas/${cargaId}/notas/${notaId}`, {
+    method: "DELETE"
+  })
+
+  if (!response.ok) {
+    throw new Error("Erro ao excluir nota da carga")
+  }
+}

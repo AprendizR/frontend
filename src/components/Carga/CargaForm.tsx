@@ -38,7 +38,7 @@ export function CargaForm({ onCadastrado }: Props) {
 
       toast.success(`✅ Carga #${novaCarga.numeroRota} criada com sucesso!`)
       
-      // Limpar formulário
+      
       setMotoristaId(null)
       setVeiculoId(null)
       setExpandido(false)
@@ -153,7 +153,7 @@ export function CargaForm({ onCadastrado }: Props) {
           </label>
           <MotoristaAutocomplete 
             onSelecionar={setMotoristaId}
-            key={motoristaId ? "selected" : "empty"} // Reset quando limpar
+            key={motoristaId ? "selected" : "empty"} 
           />
           {motoristaId && (
             <span style={{ 

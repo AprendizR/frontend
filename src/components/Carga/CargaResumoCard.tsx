@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { buscarCargaDetalhada } from "../../api/cargaApi"
+import { buscarCargaDetalhada, excluirNotaDaCarga } from "../../api/cargaApi"
 import type { CargaResumo, CargaDetalhada } from "../../types/Carga"
 import { StatusBadge } from "../Inicio/StatusBadge"
 import { NotaFiscalItem } from "../NotaFiscal/NotaFiscalItem"
@@ -43,6 +43,16 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
       onAtualizar?.()
     } catch {
       toast.error("Erro ao atualizar detalhes")
+    }
+  }
+
+  async function excluirNota(notaId: number) {
+    try {
+      await excluirNotaDaCarga(carga.id, notaId)
+      toast.success("Nota excluída com sucesso")
+      recarregarDetalhes()
+    } catch {
+      toast.error("Erro ao excluir nota")
     }
   }
 
@@ -235,14 +245,13 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
             </div>
           </div>
 
-          {cargaDetalhada.status === 'CENTRO_DISTRIBUICAO' && (
-            <div className="mb-6">
-              <AdicionarNotasNaCarga
-                cargaId={carga.id}
-                onAdicionadas={recarregarDetalhes}
-              />
-            </div>
-          )}
+          <div className="mb-6">
+            <AdicionarNotasNaCarga
+              cargaId={carga.id}
+              onAdicionadas={recarregarDetalhes}
+            />
+          </div>
+
 
           {/* Lista de Notas */}
           <div>
@@ -275,6 +284,7 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
                     key={nota.id}
                     nota={nota}
                     onAtualizar={recarregarDetalhes}
+                    onExcluir={() => excluirNota(nota.id)}
                   />
                 ))}
               </div>
