@@ -1,4 +1,3 @@
-// pages/OcorrenciasPage.tsx (NOVO)
 import { RegistrarOcorrenciaForm } from "../components/Carga/RegistrarOcorrenciaForm"
 
 export function OcorrenciasPage() {
