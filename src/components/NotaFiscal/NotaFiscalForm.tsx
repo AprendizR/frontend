@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { criarNotaFiscal } from "../../api/notaFiscalApi";
+import { ClienteAutocomplete } from "../Cliente/ClienteAutocomplete";
+import type { Cliente } from "../../types/Cliente";
 import toast from "react-hot-toast";
+import { useCep } from "../../utils/useCep";
 
 type Props = {
   onCadastrado: () => void;
@@ -10,45 +13,16 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
   const [numero, setNumero] = useState("");
   const [remetente, setRemetente] = useState("");
   const [destinatario, setDestinatario] = useState("");
-  const [cep, setCep] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [endereco, setEndereco] = useState("");
   const [valor, setValor] = useState("");
   const [volumes, setVolumes] = useState("");
   const [loading, setLoading] = useState(false);
-  const [erroCep, setErroCep] = useState<string>(""); 
+  const { cep, setCep, cidade, setCidade, endereco, setEndereco, erroCep, consultarCep, resetCep } = useCep()
 
-  
-  const consultarCep = async () => {
-    const cepLimpo = cep.replace(/\D/g, ""); 
-
-    if (cepLimpo.length !== 8) {
-      setErroCep("CEP deve ter 8 dígitos");
-      setEndereco("");
-      setCidade("");
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-      const data = await response.json();
-
-      if (data.erro) {
-        setErroCep("CEP não encontrado");
-        setEndereco("");
-        setCidade("");
-        return;
-      }
-
-      setEndereco(data.logradouro || "");
-      setCidade(data.localidade || "");
-      setErroCep("");
-    } catch (err) {
-      setErroCep("Erro ao consultar CEP. Verifique sua conexão.");
-      setEndereco("");
-      setCidade("");
-    }
-  };
+  function handleDestinatarioSelect(cliente: Cliente) {
+    setCep(cliente.cep)
+    setCidade(cliente.cidade)
+    setEndereco(cliente.endereco)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -70,12 +44,9 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
 
       setNumero("");
       setDestinatario("");
-      setCep("");
-      setCidade("");
-      setEndereco("");
       setValor("");
       setVolumes("");
-      setErroCep("");
+      resetCep()
 
       onCadastrado();
     } catch (error) {
@@ -86,33 +57,35 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: "2rem" }}>
-      <h3>Cadastrar Nota Fiscal</h3>
+    <form onSubmit={handleSubmit} className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 mb-8">
+      <h3 className="text-lg font-semibold text-white mb-4">Cadastrar Nota Fiscal</h3>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-        <input placeholder="Número da NF" value={numero} onChange={(e) => setNumero(e.target.value)} />
-        <input placeholder="Remetente" value={remetente} onChange={(e) => setRemetente(e.target.value)} />
-        <input placeholder="Destinatário" value={destinatario} onChange={(e) => setDestinatario(e.target.value)} />
+      <div className="grid grid-cols-2 gap-4">
+        <input placeholder="Número da NF" value={numero} onChange={(e) => setNumero(e.target.value)}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <ClienteAutocomplete placeholder="Remetente" value={remetente} onChange={setRemetente} onSelect={() => { }}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+        <ClienteAutocomplete placeholder="Destinatário" value={destinatario} onChange={setDestinatario} onSelect={handleDestinatarioSelect}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
         <div>
-          <input
-            placeholder="CEP"
-            value={cep}
-            onChange={(e) => setCep(e.target.value)}
-            onBlur={consultarCep}
-            maxLength={9}
-          />
-          {erroCep && <small style={{ color: "red", display: "block" }}>{erroCep}</small>}
+          <input placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={consultarCep} maxLength={9}
+            className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+          {erroCep && <small className="text-red-400 mt-1 block">{erroCep}</small>}
         </div>
-
-        <input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} />
-        <input placeholder="Endereço (Rua, Número)" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
-        <input type="number" step="0.01" placeholder="Valor (opcional)" value={valor} onChange={(e) => setValor(e.target.value)} />
-        <input type="number" placeholder="Volumes (opcional)" value={volumes} onChange={(e) => setVolumes(e.target.value)} />
+        <input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <input placeholder="Endereço" value={endereco} onChange={(e) => setEndereco(e.target.value)}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <input type="number" step="0.01" placeholder="Valor (opcional)" value={valor} onChange={(e) => setValor(e.target.value)}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <input type="number" placeholder="Volumes (opcional)" value={volumes} onChange={(e) => setVolumes(e.target.value)}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
       </div>
 
-      <button type="submit" disabled={loading} style={{ marginTop: "1rem" }}>
+      <button type="submit" disabled={loading}
+        className="mt-4 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold px-6 py-2 rounded-lg transition-colors">
         {loading ? "Cadastrando..." : "Cadastrar Nota Fiscal"}
       </button>
     </form>
-  );
+  )
 }

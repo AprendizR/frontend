@@ -7,32 +7,32 @@ type Props = {
 }
 
 export function StatCard({ title, value, icon, color = "blue", subtitle }: Props) {
-  const colorClasses = {
-    blue: "bg-blue-500 text-blue-500 bg-blue-50",
-    green: "bg-green-500 text-green-500 bg-green-50",
-    orange: "bg-orange-500 text-orange-500 bg-orange-50",
-    purple: "bg-purple-500 text-purple-500 bg-purple-50",
-    red: "bg-red-500 text-red-500 bg-red-50"
+  const colorMap = {
+    blue:   { text: "text-blue-400",   iconBg: "bg-blue-500/20",   bar: "bg-blue-500" },
+    green:  { text: "text-green-400",  iconBg: "bg-green-500/20",  bar: "bg-green-500" },
+    orange: { text: "text-orange-400", iconBg: "bg-orange-500/20", bar: "bg-orange-500" },
+    purple: { text: "text-purple-400", iconBg: "bg-purple-500/20", bar: "bg-purple-500" },
+    red:    { text: "text-red-400",    iconBg: "bg-red-500/20",    bar: "bg-red-500" },
   }
 
-  const [textColor, bgLight] = colorClasses[color].split(" ")
+  const c = colorMap[color]
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+    <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 hover:border-[#334155] transition-colors">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
-        <div className={`${bgLight} ${textColor} w-12 h-12 rounded-lg flex items-center justify-center text-2xl`}>
+        <h3 className="text-slate-400 text-sm font-medium">{title}</h3>
+        <div className={`${c.iconBg} w-12 h-12 rounded-lg flex items-center justify-center text-2xl`}>
           {icon}
         </div>
       </div>
-      
-      <div className={`text-3xl font-bold ${textColor} mb-1`}>
-        {value}
+
+      <div className={`text-3xl font-bold ${c.text} mb-3`}>{value}</div>
+
+      <div className="w-full h-1.5 bg-[#1e293b] rounded-full">
+        <div className={`h-1.5 ${c.bar} rounded-full w-3/4`} />
       </div>
-      
-      {subtitle && (
-        <p className="text-gray-500 text-xs">{subtitle}</p>
-      )}
+
+      {subtitle && <p className="text-slate-600 text-xs mt-2">{subtitle}</p>}
     </div>
   )
 }

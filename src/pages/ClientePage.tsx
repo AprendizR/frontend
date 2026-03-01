@@ -23,15 +23,11 @@ export function ClientePage() {
     }, [])
 
     return (
-        <div>
-            <h2>Clientes</h2>
-            <ClienteForm onCadastrado={carregarClientes} />            
-
-            {erro && <p>{erro}</p>}
-
+        <div className="max-w-5xl mx-auto px-6 py-8">
+            <h2 className="text-2xl font-bold text-white mb-6">Clientes</h2>
+            <ClienteForm onCadastrado={carregarClientes} />
+            {erro && <p className="text-red-400 mt-2">{erro}</p>}
             <ClienteList cliente={cliente} />
-
-
         </div>
     )
 }

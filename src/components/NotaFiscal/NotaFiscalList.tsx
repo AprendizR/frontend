@@ -11,43 +11,37 @@ export function NotaFiscalList({ notaFiscal }: Props) {
 
   return (
     <div>
-      <h3>Notas Cadastradas</h3>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr style={{ borderBottom: "2px solid #ddd" }}>
-            <th style={{ padding: "0.5rem", textAlign: "left" }}>OS</th>
-            <th style={{ padding: "0.5rem", textAlign: "left" }}>NF</th>
-            <th style={{ padding: "0.5rem", textAlign: "left" }}>Destinatário</th>
-            <th style={{ padding: "0.5rem", textAlign: "left" }}>Cidade</th>
-            <th style={{ padding: "0.5rem", textAlign: "left" }}>Remetente</th>
-            <th style={{ padding: "0.5rem", textAlign: "center" }}>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {notaFiscal.map((nf) => (
-            <tr key={nf.id} style={{ borderBottom: "1px solid #eee" }}>
-              <td style={{ padding: "0.5rem" }}>
-                <strong>{nf.ordemServico}</strong>
-              </td>
-              <td style={{ padding: "0.5rem" }}>{nf.numero}</td>
-              <td style={{ padding: "0.5rem" }}>{nf.destinatario}</td>
-              <td style={{ padding: "0.5rem" }}>{nf.cidade}</td>
-              <td style={{ padding: "0.5rem" }}>{nf.remetente || "-"}</td>
-              <td style={{ padding: "0.5rem", textAlign: "center" }}>
-                <span style={{
-                  padding: "0.25rem 0.5rem",
-                  borderRadius: "4px",
-                  backgroundColor: nf.entregue ? "#4caf50" : "#ff9800",
-                  color: "white",
-                  fontSize: "0.85rem"
-                }}>
-                  {nf.entregue ? "Entregue" : "Pendente"}
-                </span>
-              </td>
+      <h3 className="text-lg font-semibold text-white mb-4">Notas Cadastradas</h3>
+      <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-[#1e293b] text-slate-400 text-sm uppercase tracking-wider">
+              <th className="px-6 py-3 text-left">OS</th>
+              <th className="px-6 py-3 text-left">NF</th>
+              <th className="px-6 py-3 text-left">Destinatário</th>
+              <th className="px-6 py-3 text-left">Cidade</th>
+              <th className="px-6 py-3 text-left">Remetente</th>
+              <th className="px-6 py-3 text-center">Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {notaFiscal.map((nf) => (
+              <tr key={nf.id} className="border-b border-[#1e293b] hover:bg-[#1e293b] transition-colors">
+                <td className="px-6 py-3 text-white font-bold">{nf.ordemServico}</td>
+                <td className="px-6 py-3 text-slate-300">{nf.numero}</td>
+                <td className="px-6 py-3 text-slate-300">{nf.destinatario}</td>
+                <td className="px-6 py-3 text-slate-300">{nf.cidade || <span className="text-slate-600">—</span>}</td>
+                <td className="px-6 py-3 text-slate-300">{nf.remetente || <span className="text-slate-600">—</span>}</td>
+                <td className="px-6 py-3 text-center">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${nf.entregue ? "bg-green-500/20 text-green-400" : "bg-orange-500/20 text-orange-400"}`}>
+                    {nf.entregue ? "Entregue" : "Pendente"}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

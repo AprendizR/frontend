@@ -29,12 +29,22 @@ export function VeiculoForm({ onCadastrado }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input placeholder="Placa" value={placa} onChange={e => setPlaca(e.target.value)} />
-      <input placeholder="Modelo" value={modelo} onChange={e => setModelo(e.target.value)} />
-      <button type="submit">Cadastrar</button>
-      {sucesso && <p style={{ color: "green" }}>{sucesso}</p>}
-      {erro && <p style={{ color: "red" }}>{erro}</p>}
+    <form onSubmit={handleSubmit} className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 mb-8">
+      <h3 className="text-lg font-semibold text-white mb-4">Cadastrar Veículo</h3>
+
+      <div className="grid grid-cols-2 gap-4">
+        <input placeholder="Placa" value={placa} onChange={e => setPlaca(e.target.value)}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <input placeholder="Modelo" value={modelo} onChange={e => setModelo(e.target.value)}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+      </div>
+
+      <button type="submit" className="mt-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg transition-colors">
+        Cadastrar
+      </button>
+
+      {sucesso && <p className="text-green-400 mt-3 text-sm">{sucesso}</p>}
+      {erro && <p className="text-red-400 mt-3 text-sm">{erro}</p>}
     </form>
   )
 }

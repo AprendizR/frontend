@@ -34,7 +34,7 @@ export function MotoristaForm({ onCadastrado }: Props) {
     try {
       await criarMotorista({
         nome,
-        cpf: removeMascara(cpf),      
+        cpf: removeMascara(cpf),
         telefone: removeMascara(telefone)
       })
 
@@ -44,7 +44,7 @@ export function MotoristaForm({ onCadastrado }: Props) {
       setTelefone("")
       onCadastrado()
     } catch (error: any) {
-      
+
       if (error.response?.data?.erros) {
         const erros = error.response.data.erros
         Object.values(erros).forEach((msg: any) => toast.error(msg))
@@ -57,31 +57,22 @@ export function MotoristaForm({ onCadastrado }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Cadastrar Motorista</h3>
+    <form onSubmit={handleSubmit} className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 mb-8">
+      <h3 className="text-lg font-semibold text-white mb-4">Cadastrar Motorista</h3>
 
-      <input
-        placeholder="Nome"
-        value={nome}
-        onChange={e => setNome(e.target.value)}
-        required
-      />
+      <div className="grid grid-cols-3 gap-4">
+        <input
+          placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} required
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <input
+          placeholder="CPF" value={cpf} onChange={handleCPFChange}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <input placeholder="Telefone" value={telefone} onChange={handleTelefoneChange}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+      </div>
 
-      <input
-        placeholder="CPF"
-        value={cpf}
-        onChange={handleCPFChange}
-        required
-      />
-
-      <input
-        placeholder="Telefone"
-        value={telefone}
-        onChange={handleTelefoneChange}
-        required
-      />
-
-      <button type="submit" disabled={loading}>
+      <button type="submit" disabled={loading}
+        className="mt-4 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold px-6 py-2 rounded-lg transition-colors">
         {loading ? "Cadastrando..." : "Cadastrar"}
       </button>
     </form>
