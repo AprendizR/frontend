@@ -8,7 +8,9 @@ Projeto integrado a uma API REST (back-end em repositório separado).
 🛠️ Tecnologias
 
 React
+
 TypeScript
+
 Tailwind CSS
 
 ⚙️ Funcionalidades
@@ -16,20 +18,32 @@ Tailwind CSS
 🚚 Cargas
 
 Criação de cargas
+
 Vinculação de motorista e veículo
+
 Adição de múltiplas notas fiscais
+
 Atualização de status
+
 
 📦 Notas Fiscais
 
 Cadastro e listagem
+
 Vinculação à carga
+
 Controle de status
+
 Baixa de Entrega
+
 Seleção de ocorrência
+
 Nome do recebedor
+
 Upload de foto da nota fiscal
+
 Observação opcional
+
 
 🗺️ Roteirização (em desenvolvimento)
 
@@ -47,12 +61,18 @@ API REST desenvolvida em Java + Spring Boot.
 🚀 Execução
 
 git clone <repo>
+
 npm install
+
 npm run dev
+
+
 🎯 Objetivo
 
 Projeto voltado para prática de:
 
 Arquitetura front-end escalável
+
 Integração com API REST
+
 Organização de código com TypeScript
