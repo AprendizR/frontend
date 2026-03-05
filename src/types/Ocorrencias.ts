@@ -28,7 +28,6 @@ export type Ocorrencia = {
   id: number
   ordemServico: number
   numeroNota?: string
-  tipo?: TipoOcorrencia
   subtipo: SubtipoOcorrencia
   dataOcorrencia: string
   nomeRecebedor?: string
@@ -38,7 +37,6 @@ export type Ocorrencia = {
 
 export type CriarOcorrenciaDTO = {
   ordemServico: number
-  tipo?: TipoOcorrencia
   subtipo: SubtipoOcorrencia
   nomeRecebedor?: string
   observacao?: string

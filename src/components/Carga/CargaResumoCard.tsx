@@ -120,7 +120,7 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
             alignItems: "flex-end",
             gap: "0.5rem"
           }}>
-            <StatusBadge status={carga.status} />
+            <StatusBadge status={carga.statusCarga} />
 
             <span style={{
               fontSize: "0.85rem",

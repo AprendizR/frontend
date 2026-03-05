@@ -20,10 +20,10 @@ export function ClienteForm({ onCadastrado }: Props) {
     setSucesso("")
 
     try {
-      await criarCliente({ nome, cnpj, email, cep, cidade, endereco })
+      await criarCliente({ cnpj, nome, email, cep, cidade, endereco })
 
-      setNome("")
       setCnpj("")
+      setNome("")
       setEmail("")
       resetCep()
       setSucesso("Cliente cadastrado com sucesso!")
@@ -37,10 +37,10 @@ export function ClienteForm({ onCadastrado }: Props) {
     <form onSubmit={handleSubmit} className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 mb-8">
       <h3 className="text-lg font-semibold text-white mb-4">Cadastrar Cliente</h3>
 
-      <div className="grid grid-cols-2 gap-4">
-        <input placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"/>
+      <div className="grid grid-cols-2 gap-4">        
         <input placeholder="CNPJ" value={cnpj} onChange={e => setCnpj(e.target.value)}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"/>
+        <input placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)}
           className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"/>
         <input placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} 
         className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"/>

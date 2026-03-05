@@ -23,7 +23,7 @@ export interface VeiculoResumo {
 export interface CargaResumo {
   id: number
   numeroRota: number
-  status: StatusCarga
+  statusCarga: StatusCarga
   motorista: {
     id: number
     nome: string
@@ -38,7 +38,7 @@ export interface CargaResumo {
 export interface Carga {
   id: number
   numeroRota: number
-  status: StatusCarga
+  statusCarga: StatusCarga
   veiculoId: number
   motoristaId: number
   dataCriacao: string
@@ -47,7 +47,7 @@ export interface Carga {
 export interface CargaDetalhada {
   id: number
   numeroRota: number
-  status: StatusCarga
+  statusCarga: StatusCarga
   motorista: MotoristaResumo
   veiculo: VeiculoResumo
   notasFiscais: NotaFiscalResumo[]

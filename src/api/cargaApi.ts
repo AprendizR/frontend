@@ -15,9 +15,7 @@ export async function buscarCargas(): Promise<CargaResumo[]> {
 export async function criarCarga(dto: CriarCargaDTO): Promise<Carga> {
   const response = await fetch(`${API_BASE}/cargas`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify(dto)
   })
 
