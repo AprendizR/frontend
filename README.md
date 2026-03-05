@@ -1,29 +1,41 @@
 <h1>🚚🛻 Sistema de Gestão de Transportadora – Frontend</h1>
 Interface web para gerenciamento de operações de uma transportadora, permitindo controlar:
+
 Clientes
+
 Motoristas
+
 Veículos
+
 Notas Fiscais
+
 Cargas
+
 
 A aplicação permite criar cargar vinculando veículo, motorista e notas fiscais, além de acompanhar o status das entregas.
 
 
 <h2>🛠 Tecnologias </h2>
-<ul>
+
 React
+
 TypeScript
+
 Tailwind CSS
-</ul>
+
 
 
 <h2>▶️ Como executar</h2>
 git clone https://github.com/AprendizR/frontend.git
+
 cd frontend
+
 npm install
+
 npm run dev
 
-<h2>🧮 A aplicação ficará disponível em</h2>:
+
+<h2>🧮 A aplicação ficará disponível em:</h2>
 http://localhost:5173
 
 
