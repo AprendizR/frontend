@@ -1,73 +1,78 @@
-# React + TypeScript + Vite
+🚛 Sistema de Gestão para Transportadora – Front-End
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+📌 Sobre
 
-Currently, two official plugins are available:
+Front-end de um sistema de gestão para transportadora, responsável pelo controle operacional de cargas, notas fiscais, motoristas, veículos e baixas de entrega.
+Projeto integrado a uma API REST (back-end em repositório separado).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🛠️ Tecnologias
 
-## React Compiler
+React
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+TypeScript
 
-## Expanding the ESLint configuration
+Tailwind CSS
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+⚙️ Funcionalidades
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+🚚 Cargas
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Criação de cargas
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Vinculação de motorista e veículo
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Adição de múltiplas notas fiscais
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Atualização de status
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+
+📦 Notas Fiscais
+
+Cadastro e listagem
+
+Vinculação à carga
+
+Controle de status
+
+Baixa de Entrega
+
+Seleção de ocorrência
+
+Nome do recebedor
+
+Upload de foto da nota fiscal
+
+Observação opcional
+
+
+🗺️ Roteirização (em desenvolvimento)
+
+Organização automática de rota conforme notas adicionadas
+
+📄 Geração de XML (em desenvolvimento)
+
+Geração consolidada da carga finalizada
+
+🔗 Back-End
+
+API REST desenvolvida em Java + Spring Boot.
+(Repositório disponível separadamente)
+
+🚀 Execução
+
+git clone <repo>
+
+npm install
+
+npm run dev
+
+
+🎯 Objetivo
+
+Projeto voltado para prática de:
+
+Arquitetura front-end escalável
+
+Integração com API REST
+
+Organização de código com TypeScript
