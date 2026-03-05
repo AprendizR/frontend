@@ -4,6 +4,7 @@ Interface web para gerenciamento de operações de uma transportadora, permitind
 
 A aplicação permite criar cargas vinculando veículo, motorista e notas fiscais, além de acompanhar o status das entregas.
 
+
 🛠 Tecnologias
 
 React
@@ -12,9 +13,6 @@ TypeScript
 
 Tailwind CSS
 
-Axios
-
-Vite
 
 ▶️ Como executar
 git clone https://github.com/AprendizR/frontend.git
@@ -22,9 +20,11 @@ cd frontend
 npm install
 npm run dev
 
+
 A aplicação ficará disponível em:
 
 http://localhost:5173
+
 
 🎯 Objetivo
 
