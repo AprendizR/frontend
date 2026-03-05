@@ -58,3 +58,20 @@ export type CriarCargaDTO = {
   veiculoId: number
   motoristaId: number
 }
+
+export interface FiltrosCarga {
+  motoristaId?: number
+  veiculoId?: number
+  numeroCarga?: number
+  dataInicio?: string
+  dataFim?: string
+  page?: number
+  size?: number
+}
+
+export interface PageResponse<T> {
+  content: T[]
+  totalPages: number
+  totalElements: number
+  number: number
+}
