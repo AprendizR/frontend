@@ -25,7 +25,7 @@ export function MotoristaList({ motoristas }: Props) {
           <tbody>
             {motoristas.map((m) => (
               <tr key={m.id} className="border-b border-[#1e293b] hover:bg-[#1e293b] transition-colors">
-                <td className="px-6 py-3 text-white font-medium">{m.nome}</td>
+                <td className="px-6 py-3 text-white font-medium">{m.apelido || m.nome}</td>
                 <td className="px-6 py-3 text-slate-300 font-arial">{formatCPF(m.cpf)}</td>
                 <td className="px-6 py-3 text-slate-300 font-arial">{formatTelefone(m.telefone)}</td>
               </tr>

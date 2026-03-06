@@ -10,6 +10,7 @@ type Props = {
 export function MotoristaForm({ onCadastrado }: Props) {
   const [nome, setNome] = useState("")
   const [cpf, setCpf] = useState("")
+  const [apelido, setAplido] = useState("")
   const [telefone, setTelefone] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -34,6 +35,7 @@ export function MotoristaForm({ onCadastrado }: Props) {
     try {
       await criarMotorista({
         nome,
+        apelido,
         cpf: removeMascara(cpf),
         telefone: removeMascara(telefone)
       })
@@ -63,6 +65,9 @@ export function MotoristaForm({ onCadastrado }: Props) {
       <div className="grid grid-cols-3 gap-4">
         <input
           placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} required
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <input
+          placeholder="Apelido (Opcional)" value={apelido} onChange={e => setAplido(e.target.value)}
           className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
         <input
           placeholder="CPF" value={cpf} onChange={handleCPFChange}

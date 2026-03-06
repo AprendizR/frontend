@@ -9,7 +9,6 @@ type Props = {
 
 export function ClienteForm({ onCadastrado }: Props) {
   const [nome, setNome] = useState("")
-  const [email, setEmail] = useState("")
   const [sucesso, setSucesso] = useState("")
   const [erro, setErro] = useState("")
   const { cep, setCep, cidade, setCidade, endereco, setEndereco, erroCep, consultarCep, resetCep } = useCep()
@@ -37,10 +36,9 @@ export function ClienteForm({ onCadastrado }: Props) {
     setSucesso("")
 
     try {
-      await criarCliente({ cnpj, nome, email, cep, cidade, endereco })
+      await criarCliente({ cnpj, nome, cep, cidade, endereco })
       setCnpj("")
       setNome("")
-      setEmail("")
       resetCep()
       resetCnpj()
       setSucesso("Cliente cadastrado com sucesso!")
@@ -69,9 +67,6 @@ export function ClienteForm({ onCadastrado }: Props) {
         </div>
 
         <input placeholder="Nome / Razão Social" value={nome} onChange={e => setNome(e.target.value)}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
-
-        <input placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)}
           className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
 
         <div>

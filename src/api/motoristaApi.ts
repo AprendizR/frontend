@@ -7,9 +7,7 @@ export async function buscarMotoristas(filtro: string): Promise<Motorista[]> {
     return []
   }
 
-  const response = await fetch(
-    `${BASE_URL}/buscar?nome=${encodeURIComponent(filtro)}`
-  )
+  const response = await fetch(`${BASE_URL}/buscar?nome=${encodeURIComponent(filtro)}`)
 
   if (!response.ok) {
     throw new Error("Erro ao buscar motoristas")
@@ -30,7 +28,6 @@ export async function listarMotoristas(): Promise<Motorista[]> {
 
 
 export async function criarMotorista(dados: Omit<Motorista, "id">) {
-  
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
