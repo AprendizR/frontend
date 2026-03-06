@@ -4,11 +4,11 @@ export type NotaFiscal = {
   numero: string
   remetente: string
   destinatario: string
-  cep?: string          
-  cidade?: string      
-  endereco?: string     
-  valor?: number       
-  volumes?: number     
+  cep?: string
+  cidade?: string
+  endereco?: string
+  valor?: number
+  volumes?: number
   entregue: boolean
 }
 
@@ -21,4 +21,15 @@ export type CriarNotaDTO = {
   endereco: string
   valor?: number
   volumes?: number
+}
+
+export type FiltrosNotasFiscais = {
+  numero?: string
+  ordemServico?: number
+  remetente?: string
+  destinatario?: string
+  dataInicio?: string
+  dataFim?: string
+  page?: number
+  size?: number
 }

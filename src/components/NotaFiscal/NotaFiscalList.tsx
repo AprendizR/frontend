@@ -11,7 +11,10 @@ export function NotaFiscalList({ notaFiscal }: Props) {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-white mb-4">Notas Cadastradas</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-white">Notas Cadastradas</h3>
+        <span className="text-slate-400 text-sm">{notaFiscal.length} {notaFiscal.length === 1 ? "nota" : "notas"}</span>
+      </div>
       <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>

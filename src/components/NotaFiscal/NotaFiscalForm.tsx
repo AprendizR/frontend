@@ -57,10 +57,10 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 mb-8">
+    <form className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 flex flex-col h-full">
       <h3 className="text-lg font-semibold text-white mb-4">Cadastrar Nota Fiscal</h3>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 flex-1">
         <input placeholder="Número da NF" value={numero} onChange={(e) => setNumero(e.target.value)}
           className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
         <ClienteAutocomplete placeholder="Remetente" value={remetente} onChange={setRemetente} onSelect={() => { }}
@@ -68,7 +68,7 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
         <ClienteAutocomplete placeholder="Destinatário" value={destinatario} onChange={setDestinatario} onSelect={handleDestinatarioSelect}
           className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
         <div>
-          <input placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={consultarCep} maxLength={9}
+          <input placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={consultarCep} maxLength={8}
             className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
           {erroCep && <small className="text-red-400 mt-1 block">{erroCep}</small>}
         </div>

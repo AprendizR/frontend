@@ -1,8 +1,7 @@
-import type { Carga, CargaResumo, CargaDetalhada, CriarCargaDTO, FiltrosCarga, PageResponse } from "../types/Carga"
+import type { Carga, CargaResumo, CargaDetalhada, CriarCargaDTO, FiltrosCarga } from "../types/Carga"
+import type { PageResponse } from "../types/Page"
 
 const API_BASE = "http://localhost:8080/api"
-
-
 
 export async function criarCarga(dto: CriarCargaDTO): Promise<Carga> {
   const response = await fetch(`${API_BASE}/cargas`, {

@@ -1,5 +1,7 @@
-import type { NotaFiscal } from "../types/NotaFiscal"
+import type { NotaFiscalResumo } from "../types/Carga"
+import type { FiltrosNotasFiscais, NotaFiscal } from "../types/NotaFiscal"
 import type { CriarNotaDTO } from "../types/NotaFiscal"
+import type { PageResponse } from "../types/Page"
 
 const API_BASE = "http://localhost:8080/api/notas-fiscais"
 
@@ -27,16 +29,6 @@ export async function listarNotas(): Promise<NotaFiscal[]> {
   return response.json()
 }
 
-export async function buscarNotaPorOS(ordemServico: number): Promise<NotaFiscal> {
-  const response = await fetch(`${API_BASE}/os/${ordemServico}`)
-
-  if (!response.ok) {
-    throw new Error(`Nota com OS ${ordemServico} não encontrada`)
-  }
-
-  return response.json()
-}
-
 export async function listarNotasDisponiveis(): Promise<NotaFiscal[]> {
   const response = await fetch(`${API_BASE}/disponiveis`)
 
@@ -44,5 +36,22 @@ export async function listarNotasDisponiveis(): Promise<NotaFiscal[]> {
     throw new Error("Erro ao listar notas disponíveis")
   }
 
+  return response.json()
+}
+
+export async function buscarNotasFiscais(filtros: FiltrosNotasFiscais = {}): Promise<PageResponse<NotaFiscal>> {
+  const params = new URLSearchParams()
+
+  if (filtros.numero) params.append("numero", String(filtros.numero))
+  if (filtros.ordemServico) params.append("ordemServico", String(filtros.ordemServico))
+  if (filtros.remetente) params.append("remetente", String(filtros.remetente))
+  if (filtros.destinatario) params.append("destinatario", filtros.destinatario)
+  if (filtros.dataInicio) params.append("dataInicio", filtros.dataInicio)
+  if (filtros.dataFim) params.append("dataFim", filtros.dataFim)
+  params.append("page", String(filtros.page ?? 0))
+  params.append("size", String(filtros.size ?? 10))
+
+  const response = await fetch(`${API_BASE}?${params.toString()}`)
+  if (!response.ok) throw new Error("Erro ao buscar notas")
   return response.json()
 }

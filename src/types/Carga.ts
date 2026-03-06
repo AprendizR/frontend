@@ -68,10 +68,3 @@ export interface FiltrosCarga {
   page?: number
   size?: number
 }
-
-export interface PageResponse<T> {
-  content: T[]
-  totalPages: number
-  totalElements: number
-  number: number
-}
