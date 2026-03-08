@@ -1,3 +1,12 @@
+export type StatusNota =
+  | "PENDENTE"
+  | "EM_ROTA"
+  | "ENTREGUE"
+  | "DEVOLVIDO"
+  | "TROCA"
+  | "COLETA"
+  | "CANCELADA"
+
 export type NotaFiscal = {
   id: number
   ordemServico: number
@@ -9,7 +18,7 @@ export type NotaFiscal = {
   endereco?: string
   valor?: number
   volumes?: number
-  entregue: boolean
+  status: StatusNota
 }
 
 export type CriarNotaDTO = {

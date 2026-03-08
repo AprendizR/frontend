@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import type { FiltrosNotasFiscais, NotaFiscal } from "../types/NotaFiscal"
-import { buscarNotasFiscais, listarNotas } from "../api/notaFiscalApi"
+import { buscarNotasFiscais } from "../api/notaFiscalApi"
 import { NotaFiscalForm } from "../components/NotaFiscal/NotaFiscalForm"
 import { NotaFiscalList } from "../components/NotaFiscal/NotaFiscalList"
 import toast from "react-hot-toast"
@@ -41,9 +41,9 @@ export function NotaFiscalPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-8">
+    <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white">Notas Fiscais Cadastradas</h2>
+        <h2 className="text-2xl font-bold text-white mb-6">Notas Fiscais Cadastradas</h2>
         <span className="text-slate-400 text-sm">{totalElements} {totalElements === 1 ? "nota" : "notas"}</span>
       </div>
 
@@ -93,7 +93,7 @@ export function NotaFiscalPage() {
         <NotaFiscalForm onCadastrado={() => carregarNotas()} />
       </div>
 
-      <NotaFiscalList notaFiscal={notaFiscal} />
+      <NotaFiscalList notaFiscal={notaFiscal} onAtualizado={() => carregarNotas()} />
 
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6">

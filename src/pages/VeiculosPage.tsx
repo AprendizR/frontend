@@ -23,13 +23,10 @@ export function VeiculosPage() {
 
   return (
     <div>
-      <h2>Veículos</h2>
-
+      <h2 className="text-2xl font-bold text-white mb-6">Veículos</h2>
       <VeiculoForm onCadastrado={carregarVeiculos} />
-
-      {erro && <p>{erro}</p>}
-
-      <VeiculoList veiculos={veiculos} />
+      {erro && <p className="text-red-400 mt-2">{erro}</p>}
+      <VeiculoList veiculos={veiculos} onAtualizado={carregarVeiculos} />
     </div>
   )
 }

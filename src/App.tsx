@@ -7,22 +7,23 @@ import { OcorrenciasPage } from "./pages/OcorrenciasPage"
 import { MotoristasPage } from "./pages/MotoristasPage"
 import { VeiculosPage } from "./pages/VeiculosPage"
 import { ClientePage } from "./pages/ClientePage"
+import { Toaster } from "react-hot-toast"
 
 export default function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-center" />
       <Header />
-
       <main className="container">
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/cargas" element={<CargasPage />} />
-          <Route path="/notas-fiscais" element={<NotaFiscalPage />} />          
-          <Route path ="/motoristas" element={<MotoristasPage/>}/>
-          <Route path="/veiculos" element={<VeiculosPage/>}/>
-          <Route path="/clientes" element={<ClientePage/>}/>
-          <Route path="/ocorrencias" element={<OcorrenciasPage/>}/>
-          
+          <Route path="/notas-fiscais" element={<NotaFiscalPage />} />
+          <Route path="/motoristas" element={<MotoristasPage />} />
+          <Route path="/veiculos" element={<VeiculosPage />} />
+          <Route path="/clientes" element={<ClientePage />} />
+          <Route path="/ocorrencias" element={<OcorrenciasPage />} />
+
         </Routes>
       </main>
     </BrowserRouter>

@@ -31,7 +31,7 @@ export function MotoristasPage() {
       
       {erro && <p>{erro}</p>}   
 
-      <MotoristaList motoristas={motoristas} />
+      <MotoristaList motoristas={motoristas} onAtualizado={carregarMotoristas} />
     </div>
   )
 }

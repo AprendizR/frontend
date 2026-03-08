@@ -1,4 +1,3 @@
-import type { NotaFiscalResumo } from "../types/Carga"
 import type { FiltrosNotasFiscais, NotaFiscal } from "../types/NotaFiscal"
 import type { CriarNotaDTO } from "../types/NotaFiscal"
 import type { PageResponse } from "../types/Page"
@@ -16,6 +15,17 @@ export async function criarNotaFiscal(dto: CriarNotaDTO): Promise<NotaFiscal> {
     throw new Error("Erro ao cadastrar nota fiscal")
   }
 
+  return response.json()
+}
+
+export async function atualizarNota(id: number, dto: CriarNotaDTO): Promise<NotaFiscal> {
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto)
+  })
+
+  if (!response.ok) throw new Error("Erro ao atualizar nota")
   return response.json()
 }
 
@@ -54,4 +64,12 @@ export async function buscarNotasFiscais(filtros: FiltrosNotasFiscais = {}): Pro
   const response = await fetch(`${API_BASE}?${params.toString()}`)
   if (!response.ok) throw new Error("Erro ao buscar notas")
   return response.json()
+}
+
+export async function deletarNota(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: "DELETE"
+  })
+
+  if (!response.ok) throw new Error("Erro ao deletar nota")
 }

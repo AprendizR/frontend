@@ -57,7 +57,7 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
   }
 
   return (
-    <form className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 flex flex-col h-full">
+    <form onSubmit={handleSubmit} className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6 flex flex-col h-full">
       <h3 className="text-lg font-semibold text-white mb-4">Cadastrar Nota Fiscal</h3>
 
       <div className="grid grid-cols-2 gap-4 flex-1">

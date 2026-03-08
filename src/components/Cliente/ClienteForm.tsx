@@ -12,7 +12,7 @@ export function ClienteForm({ onCadastrado }: Props) {
   const [sucesso, setSucesso] = useState("")
   const [erro, setErro] = useState("")
   const { cep, setCep, cidade, setCidade, endereco, setEndereco, erroCep, consultarCep, resetCep } = useCep()
-  const { cnpj, setCnpj, erroCnpj, logradouro, municipio, carregando, consultarCnpj, resetCnpj } = useCnpj()
+  const { cnpj, setCnpj, erroCnpj, carregando, consultarCnpj, resetCnpj } = useCnpj()
 
   async function handleCnpjBlur() {
     const data = await consultarCnpj()
