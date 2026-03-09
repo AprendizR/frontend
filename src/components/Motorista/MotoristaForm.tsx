@@ -12,6 +12,7 @@ export function MotoristaForm({ onCadastrado }: Props) {
   const [cpf, setCpf] = useState("")
   const [apelido, setAplido] = useState("")
   const [telefone, setTelefone] = useState("")
+  const [valorDiaria, setValorDiaria] = useState("")
   const [loading, setLoading] = useState(false)
 
   function handleCPFChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -37,13 +38,15 @@ export function MotoristaForm({ onCadastrado }: Props) {
         nome,
         apelido,
         cpf: removeMascara(cpf),
-        telefone: removeMascara(telefone)
+        telefone: removeMascara(telefone),
+        valorDiaria: valorDiaria ? parseFloat(valorDiaria) : 0
       })
 
       toast.success("Motorista cadastrado!")
       setNome("")
       setCpf("")
       setTelefone("")
+      setValorDiaria("")
       onCadastrado()
     } catch (error: any) {
 
@@ -73,6 +76,8 @@ export function MotoristaForm({ onCadastrado }: Props) {
           placeholder="CPF" value={cpf} onChange={handleCPFChange}
           className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
         <input placeholder="Telefone" value={telefone} onChange={handleTelefoneChange}
+          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <input type="number" step="0.01" placeholder="Valor Diária (R$)" value={valorDiaria} onChange={e => setValorDiaria(e.target.value)}
           className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
       </div>
 

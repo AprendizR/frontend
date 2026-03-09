@@ -1,4 +1,4 @@
-import type { CriarMotoristaDTO, Motorista } from "../types/Motorista"
+import type { CriarMotoristaDTO, Motorista, FolhaMotorista } from "../types/Motorista"
 
 const API_BASE = "http://localhost:8080/api/motoristas"
 
@@ -25,7 +25,7 @@ export async function atualizarMotorista(id: number, dto: CriarMotoristaDTO): Pr
 }
 
 export async function buscarMotoristas(filtro: string): Promise<Motorista[]> {
-  if (!filtro || filtro.trim().length < 2) {return []}
+  if (!filtro || filtro.trim().length < 2) { return [] }
   const response = await fetch(`${API_BASE}/buscar?nome=${encodeURIComponent(filtro)}`)
 
   if (!response.ok) throw new Error("Erro ao buscar motoristas")
@@ -45,4 +45,30 @@ export async function deletarMotorista(id: number): Promise<void> {
   })
 
   if (!response.ok) throw new Error("Erro ao deletar Motorista")
+}
+
+export async function zerarDias(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/${id}/zerar-dias`, {
+    method: "PUT"
+  })
+  if (!response.ok) throw new Error("Erro ao zerar dias")
+}
+
+export async function buscarFolha(id: number): Promise<FolhaMotorista> {
+  const response = await fetch(`${API_BASE}/${id}/folha`)
+  if (!response.ok) throw new Error("Erro ao buscar folha")
+  return response.json()
+}
+
+export async function atualizarDescontos(id: number, descontos: number): Promise<Motorista> {
+  const response = await fetch(`${API_BASE}/${id}/descontos?descontos=${descontos}`, {
+    method: "PUT"
+  })
+  if (!response.ok) throw new Error("Erro ao atualizar descontos")
+  return response.json()
+}
+
+export async function buscarFolhas(): Promise<FolhaMotorista[]> {
+  const ids = await listarMotoristas()
+  return Promise.all(ids.map(m => buscarFolha(m.id)))
 }

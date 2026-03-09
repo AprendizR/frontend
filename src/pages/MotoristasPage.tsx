@@ -1,37 +1,15 @@
-import { useEffect, useState } from "react"
-import { listarMotoristas } from "../api/motoristaApi"
-import type { Motorista } from "../types/Motorista"
 import { MotoristaForm } from "../components/Motorista/MotoristaForm"
-import { MotoristaList } from "../components/Motorista/MotoristaList"
+import { FolhaTable } from "../components/Motorista/FolhaTable"
+import { useState } from "react"
 
 export function MotoristasPage() {
-  const [motoristas, setMotoristas] = useState<Motorista[]>([])
-  const [erro, setErro] = useState("")
-  
-
-  async function carregarMotoristas() {   
-
-    try {
-      const dados = await listarMotoristas()
-      setMotoristas(dados)
-    } catch {
-      setErro("Erro ao carregar motoristas")
-    }
-  }
-
-  useEffect(() => {
-    carregarMotoristas()
-  }, [])
+  const [atualizar, setAtualizar] = useState(0)
 
   return (
-    <div>
-      <h2>Motoristas</h2>
-
-      <MotoristaForm onCadastrado={carregarMotoristas} />
-      
-      {erro && <p>{erro}</p>}   
-
-      <MotoristaList motoristas={motoristas} onAtualizado={carregarMotoristas} />
+    <div className="max-w-5xl mx-auto px-6 py-8">
+      <h2 className="text-2xl font-bold text-white mb-6">Motoristas</h2>
+      <MotoristaForm onCadastrado={() => setAtualizar(a => a + 1)} />
+      <FolhaTable key={atualizar} />
     </div>
   )
 }

@@ -1,0 +1,163 @@
+import { useEffect, useState, Fragment } from "react"
+import type { FolhaMotorista, CriarMotoristaDTO } from "../../types/Motorista"
+import { buscarFolha, atualizarDescontos, zerarDias, listarMotoristas, atualizarMotorista, deletarMotorista } from "../../api/motoristaApi"
+import toast from "react-hot-toast"
+
+export function FolhaTable() {
+  const [folhas, setFolhas] = useState<FolhaMotorista[]>([])
+  const [descontos, setDescontos] = useState<Record<number, string>>({})
+  const [editando, setEditando] = useState<number | null>(null)
+  const [form, setForm] = useState<CriarMotoristaDTO>({ nome: "", apelido: "", cpf: "", telefone: "", valorDiaria: 0 })
+  const [loading, setLoading] = useState(true)
+
+  const inputClass = "w-full bg-[#0f172a] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-orange-500"
+
+  async function carregarFolhas() {
+    setLoading(true)
+    try {
+      const motoristas = await listarMotoristas()
+      const dados = await Promise.all(motoristas.map(m => buscarFolha(m.id)))
+      const ordenado = dados.sort((a, b) => b.diasTrabalhados - a.diasTrabalhados)
+      setFolhas(ordenado)
+      const descontosIniciais: Record<number, string> = {}
+      ordenado.forEach(f => { descontosIniciais[f.motoristaId] = String(f.descontos) })
+      setDescontos(descontosIniciais)
+    } catch {
+      toast.error("Erro ao carregar folhas")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { carregarFolhas() }, [])
+
+  async function handleDesconto(id: number) {
+    const valor = parseFloat(descontos[id] || "0")
+    try {
+      await atualizarDescontos(id, valor)
+      carregarFolhas()
+    } catch {
+      toast.error("Erro ao atualizar desconto")
+    }
+  }
+
+  async function handleZerarMes() {
+    if (!confirm("Deseja zerar os dias de todos os motoristas?")) return
+    try {
+      await Promise.all(folhas.map(f => zerarDias(f.motoristaId)))
+      toast.success("Mês zerado!")
+      carregarFolhas()
+    } catch {
+      toast.error("Erro ao zerar mês")
+    }
+  }
+
+  function abrirEdicao(f: FolhaMotorista) {
+    setEditando(f.motoristaId)
+    setForm({ nome: f.nome, apelido: f.apelido, cpf: f.cpf, telefone: f.telefone, valorDiaria: f.valorDiaria })
+  }
+
+  async function handleSalvar() {
+    if (!editando) return
+    try {
+      await atualizarMotorista(editando, form)
+      toast.success("Motorista atualizado!")
+      setEditando(null)
+      carregarFolhas()
+    } catch {
+      toast.error("Erro ao atualizar motorista")
+    }
+  }
+
+  async function handleDeletar(id: number) {
+    if (!confirm("Deseja excluir este motorista?")) return
+    try {
+      await deletarMotorista(id)
+      toast.success("Motorista excluído!")
+      carregarFolhas()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao excluir motorista")
+    }
+  }
+
+  if (loading) return <div className="text-center py-12 text-slate-500">Carregando...</div>
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-white">Folha do Mês</h3>
+        <button onClick={handleZerarMes} className="px-4 py-2 text-sm border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors">
+          Zerar Mês
+        </button>
+      </div>
+
+      <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-[#1e293b] text-slate-400 text-sm uppercase tracking-wider">
+              <th className="px-6 py-3 text-left">Motorista</th>
+              <th className="px-6 py-3 text-center">Dias</th>
+              <th className="px-6 py-3 text-center">Diária</th>
+              <th className="px-6 py-3 text-center">Descontos</th>
+              <th className="px-6 py-3 text-center">Líquido</th>
+              <th className="px-6 py-3 text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {folhas.map(f => (
+              <Fragment key={f.motoristaId}>
+                <tr className="border-b border-[#1e293b] hover:bg-[#1e293b] transition-colors">
+                  <td className="px-6 py-3 text-white font-medium">{f.apelido || f.nome}</td>
+                  <td className="px-6 py-3 text-center text-slate-300">{f.diasTrabalhados}</td>
+                  <td className="px-6 py-3 text-center text-slate-300">R$ {f.valorDiaria.toFixed(2)}</td>
+                  <td className="px-6 py-3 text-center">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={descontos[f.motoristaId] ?? "0"}
+                      onChange={e => setDescontos({ ...descontos, [f.motoristaId]: e.target.value })}
+                      onBlur={() => handleDesconto(f.motoristaId)}
+                      className="w-24 bg-[#1e293b] text-white border border-[#334155] rounded-lg px-3 py-1 text-sm text-center focus:outline-none focus:border-orange-500"
+                    />
+                  </td>
+                  <td className="px-6 py-3 text-center font-semibold text-orange-400">R$ {f.valorLiquido.toFixed(2)}</td>
+                  <td className="px-6 py-3 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button onClick={() => abrirEdicao(f)} className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all">
+                        ✏️
+                      </button>
+                      <button onClick={() => handleDeletar(f.motoristaId)} className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {editando === f.motoristaId && (
+                  <tr className="border-b border-blue-500/30 bg-[#1e293b]">
+                    <td colSpan={6} className="px-6 py-4">
+                      <div className="grid grid-cols-3 gap-3 mb-3">
+                        <input placeholder="Nome" value={form.nome} onChange={e => setForm({ ...form, nome: e.target.value })} className={inputClass} />
+                        <input placeholder="Apelido" value={form.apelido} onChange={e => setForm({ ...form, apelido: e.target.value })} className={inputClass} />
+                        <input placeholder="CPF" value={form.cpf} onChange={e => setForm({ ...form, cpf: e.target.value })} className={inputClass} />
+                        <input placeholder="Telefone" value={form.telefone} onChange={e => setForm({ ...form, telefone: e.target.value })} className={inputClass} />
+                        <input type="number" step="0.01" placeholder="Valor Diária" value={form.valorDiaria} onChange={e => setForm({ ...form, valorDiaria: parseFloat(e.target.value) || 0 })} className={inputClass} />
+                      </div>
+                      <div className="flex gap-2 justify-end">
+                        <button onClick={() => setEditando(null)} className="px-4 py-1.5 text-sm border border-[#334155] rounded-lg text-slate-300 hover:bg-[#0f172a] transition-colors">
+                          Cancelar
+                        </button>
+                        <button onClick={handleSalvar} className="px-4 py-1.5 text-sm bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors">
+                          Salvar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
