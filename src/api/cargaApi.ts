@@ -1,12 +1,12 @@
 import type { Carga, CargaResumo, CargaDetalhada, CriarCargaDTO, FiltrosCarga } from "../types/Carga"
 import type { PageResponse } from "../types/Page"
 
-const API_BASE = "http://localhost:8080/api"
+const API_BASE = "http://localhost:8080/api/cargas"
 
 export async function criarCarga(dto: CriarCargaDTO): Promise<Carga> {
-  const response = await fetch(`${API_BASE}/cargas`, {
+  const response = await fetch(API_BASE, {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dto)
   })
 
@@ -17,8 +17,18 @@ export async function criarCarga(dto: CriarCargaDTO): Promise<Carga> {
   return response.json()
 }
 
+export async function atualizarCarga(id: number, dto: CriarCargaDTO): Promise<CargaResumo> {
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto)
+  })
+  if (!response.ok) throw new Error("Erro ao atualizar carga")
+  return response.json()
+}
+
 export async function adicionarNotaNaCarga(cargaId: number, notaId: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/cargas/${cargaId}/notas/${notaId}`, {
+  const response = await fetch(`${API_BASE}/${cargaId}/notas/${notaId}`, {
     method: "POST"
   })
 
@@ -34,7 +44,7 @@ export async function adicionarNotasNaCarga(cargaId: number, notasIds: number[])
 }
 
 export async function excluirNotaDaCarga(cargaId: number, notaId: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/cargas/${cargaId}/notas/${notaId}`, {
+  const response = await fetch(`${API_BASE}/${cargaId}/notas/${notaId}`, {
     method: "DELETE"
   })
 
@@ -44,7 +54,7 @@ export async function excluirNotaDaCarga(cargaId: number, notaId: number): Promi
 }
 
 export async function buscarCargaDetalhada(id: number): Promise<CargaDetalhada> {
-  const response = await fetch(`${API_BASE}/cargas/${id}`)
+  const response = await fetch(`${API_BASE}/${id}`)
   if (!response.ok) throw new Error("Erro ao buscar carga detalhada")
   return response.json()
 }
@@ -60,7 +70,12 @@ export async function buscarCargas(filtros: FiltrosCarga = {}): Promise<PageResp
   params.append("page", String(filtros.page ?? 0))
   params.append("size", String(filtros.size ?? 10))
 
-  const response = await fetch(`${API_BASE}/cargas?${params.toString()}`)
+  const response = await fetch(`${API_BASE}?${params.toString()}`)
   if (!response.ok) throw new Error("Erro ao buscar cargas")
   return response.json()
+}
+
+export async function excluirCarga(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/${id}`, { method: "DELETE" })
+  if (!response.ok) throw new Error("Erro ao excluir carga")
 }

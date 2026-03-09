@@ -21,8 +21,8 @@ export function CargasPage() {
     try {
       const dados = await buscarCargas(f)
       setCargas(dados.content)
-      setTotalPages(dados.totalPages)
-      setTotalElements(dados.totalElements)
+      setTotalPages(dados.page.totalPages)
+      setTotalElements(dados.page.totalElements)
     } catch {
       toast.error("Erro ao carregar cargas")
     } finally {

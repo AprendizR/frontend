@@ -1,4 +1,3 @@
-// components/CargaForm.tsx
 import { useState } from "react"
 import { criarCarga } from "../../api/cargaApi"
 import { MotoristaAutocomplete } from "../Motorista/MotoristaAutocomplete"
@@ -12,37 +11,36 @@ type Props = {
 export function CargaForm({ onCadastrado }: Props) {
   const [motoristaId, setMotoristaId] = useState<number | null>(null)
   const [veiculoId, setVeiculoId] = useState<number | null>(null)
+  const [ajudanteId, setAjudanteId] = useState<number | null>(null)
+  const [diasRota, setDiasRota] = useState<number>(1)
   const [loading, setLoading] = useState(false)
   const [expandido, setExpandido] = useState(false)
+
+  function handleFechar() {
+    setExpandido(false)
+    setMotoristaId(null)
+    setVeiculoId(null)
+    setAjudanteId(null)
+    setDiasRota(1)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    if (!motoristaId) {
-      toast.error("Selecione um motorista")
-      return
-    }
-
-    if (!veiculoId) {
-      toast.error("Selecione um veículo")
-      return
-    }
+    if (!motoristaId) { toast.error("Selecione um motorista"); return }
+    if (!veiculoId) { toast.error("Selecione um veículo"); return }
 
     setLoading(true)
-
     try {
       const novaCarga = await criarCarga({
-        veiculoId: Number(veiculoId),
-        motoristaId: Number(motoristaId)
+        veiculoId,
+        motoristaId,
+        ajudanteId: ajudanteId ?? undefined,
+        diasRota
       })
 
-      toast.success(`✅ Carga #${novaCarga.numeroRota} criada com sucesso!`)
-      
-      
-      setMotoristaId(null)
-      setVeiculoId(null)
-      setExpandido(false)
-      
+      toast.success(`Carga #${novaCarga.numeroRota} criada!`)
+      handleFechar()
       onCadastrado?.()
     } catch {
       toast.error("Erro ao cadastrar carga")
@@ -53,222 +51,63 @@ export function CargaForm({ onCadastrado }: Props) {
 
   if (!expandido) {
     return (
-      <div style={{ marginBottom: "2rem" }}>
+      <div className="mb-6">
         <button
           type="button"
           onClick={() => setExpandido(true)}
-          style={{
-            width: "100%",
-            padding: "1rem",
-            backgroundColor: "#2196f3",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "1rem",
-            fontWeight: "600",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.5rem",
-            transition: "all 0.2s ease"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#1976d2"
-            e.currentTarget.style.transform = "translateY(-2px)"
-            e.currentTarget.style.boxShadow = "0 4px 12px rgba(33, 150, 243, 0.4)"
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "#2196f3"
-            e.currentTarget.style.transform = "translateY(0)"
-            e.currentTarget.style.boxShadow = "none"
-          }}
+          className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
         >
-          <span style={{ fontSize: "1.25rem" }}>➕</span>
-          Nova Carga
+          ➕ Nova Carga
         </button>
       </div>
     )
   }
 
   return (
-    <form 
-      onSubmit={handleSubmit}
-      style={{
-        marginBottom: "2rem",
-        border: "2px solid #2196f3",
-        borderRadius: "8px",
-        padding: "1.5rem",
-        backgroundColor: "#e3f2fd"
-      }}
-    >
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center",
-        marginBottom: "1.5rem"
-      }}>
-        <h3 style={{ 
-          margin: 0,
-          color: "#1565c0",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem"
-        }}>
-          🚚 Cadastrar Nova Carga
-        </h3>
-        <button
-          type="button"
-          onClick={() => {
-            setExpandido(false)
-            setMotoristaId(null)
-            setVeiculoId(null)
-          }}
-          style={{
-            padding: "0.5rem",
-            backgroundColor: "transparent",
-            border: "none",
-            cursor: "pointer",
-            fontSize: "1.25rem",
-            color: "#666",
-            lineHeight: 1
-          }}
-          title="Fechar"
-        >
-          ✕
+    <form onSubmit={handleSubmit} className="bg-[#0f172a] border border-orange-500/30 rounded-xl p-6 mb-6">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-semibold text-white">🚚 Nova Carga</h3>
+        <button type="button" onClick={handleFechar} className="text-slate-400 hover:text-white transition-colors text-xl">✕</button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Motorista *</label>
+          <MotoristaAutocomplete onSelecionar={setMotoristaId} />
+        </div>
+
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Veículo *</label>
+          <VeiculoAutocomplete onSelecionar={setVeiculoId} />
+        </div>
+
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Ajudante (opcional)</label>
+          <MotoristaAutocomplete onSelecionar={setAjudanteId} />
+        </div>
+
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Dias da Rota</label>
+          <input
+            type="number"
+            min={1}
+            value={diasRota}
+            onChange={e => setDiasRota(Number(e.target.value))}
+            className="w-full bg-[#1e293b] text-white border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-3 justify-end mt-6">
+        <button type="button" onClick={handleFechar} disabled={loading}
+          className="px-6 py-2 border border-[#334155] rounded-lg text-slate-300 hover:bg-[#1e293b] transition-colors">
+          Cancelar
+        </button>
+        <button type="submit" disabled={loading || !motoristaId || !veiculoId}
+          className="px-6 py-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors">
+          {loading ? "Criando..." : "Criar Carga"}
         </button>
       </div>
-
-      <div style={{ display: "grid", gap: "1.25rem" }}>
-        {/* Motorista */}
-        <div>
-          <label style={{ 
-            display: "block", 
-            marginBottom: "0.5rem", 
-            fontSize: "0.95rem", 
-            fontWeight: "600",
-            color: "#333"
-          }}>
-            👤 Motorista *
-          </label>
-          <MotoristaAutocomplete 
-            onSelecionar={setMotoristaId}
-            key={motoristaId ? "selected" : "empty"} 
-          />
-          {motoristaId && (
-            <span style={{ 
-              display: "inline-block",
-              marginTop: "0.5rem",
-              fontSize: "0.85rem",
-              color: "#4caf50",
-              fontWeight: "500"
-            }}>
-              ✓ Motorista selecionado
-            </span>
-          )}
-        </div>
-
-        {/* Veículo */}
-        <div>
-          <label style={{ 
-            display: "block", 
-            marginBottom: "0.5rem", 
-            fontSize: "0.95rem", 
-            fontWeight: "600",
-            color: "#333"
-          }}>
-            🚛 Veículo *
-          </label>
-          <VeiculoAutocomplete 
-            onSelecionar={setVeiculoId}
-            key={veiculoId ? "selected" : "empty"} // Reset quando limpar
-          />
-          {veiculoId && (
-            <span style={{ 
-              display: "inline-block",
-              marginTop: "0.5rem",
-              fontSize: "0.85rem",
-              color: "#4caf50",
-              fontWeight: "500"
-            }}>
-              ✓ Veículo selecionado
-            </span>
-          )}
-        </div>
-
-        {/* Botões */}
-        <div style={{ 
-          display: "flex", 
-          gap: "0.75rem", 
-          justifyContent: "flex-end",
-          marginTop: "0.5rem"
-        }}>
-          <button
-            type="button"
-            onClick={() => {
-              setExpandido(false)
-              setMotoristaId(null)
-              setVeiculoId(null)
-            }}
-            disabled={loading}
-            style={{
-              padding: "0.75rem 1.5rem",
-              border: "2px solid #ddd",
-              borderRadius: "6px",
-              backgroundColor: "white",
-              cursor: loading ? "not-allowed" : "pointer",
-              fontSize: "0.95rem",
-              fontWeight: "500",
-              opacity: loading ? 0.6 : 1
-            }}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={loading || !motoristaId || !veiculoId}
-            style={{
-              padding: "0.75rem 2rem",
-              border: "none",
-              borderRadius: "6px",
-              backgroundColor: (!motoristaId || !veiculoId) ? "#ccc" : "#4caf50",
-              color: "white",
-              cursor: (loading || !motoristaId || !veiculoId) ? "not-allowed" : "pointer",
-              fontWeight: "600",
-              fontSize: "0.95rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem"
-            }}
-          >
-            {loading ? (
-              <>
-                <span style={{ 
-                  display: "inline-block",
-                  width: "16px",
-                  height: "16px",
-                  border: "2px solid white",
-                  borderTopColor: "transparent",
-                  borderRadius: "50%",
-                  animation: "spin 0.8s linear infinite"
-                }} />
-                Criando...
-              </>
-            ) : (
-              <>
-                <span>✓</span>
-                Criar Carga
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </form>
   )
 }

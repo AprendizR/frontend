@@ -5,7 +5,7 @@ export type StatusCarga =
 
 export interface NotaFiscalResumo {
   id: number
-  ordemServico: number 
+  ordemServico: number
   numero: string
   entregue: boolean
 }
@@ -27,10 +27,17 @@ export interface CargaResumo {
   motorista: {
     id: number
     nome: string
+    apelido: string
+  }
+  ajudante?: {
+    id: number
+    nome: string
+    apelido: string
   }
   veiculo: {
     id: number
     placa: string
+    modelo: string
   }
   dataCriacao: string
 }
@@ -57,6 +64,8 @@ export interface CargaDetalhada {
 export type CriarCargaDTO = {
   veiculoId: number
   motoristaId: number
+  ajudanteId?: number
+  diasRota: number
 }
 
 export interface FiltrosCarga {

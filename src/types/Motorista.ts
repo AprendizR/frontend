@@ -22,9 +22,7 @@ export interface FolhaMotorista {
   apelido: string
   cpf: string
   telefone: string
-  diasTrabalhados: number
+  diasComoMotorista: number
+  diasComoAjudante: number
   valorDiaria: number
-  descontos: number
-  totalBruto: number
-  valorLiquido: number
 }

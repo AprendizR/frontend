@@ -1,11 +1,10 @@
 import { useEffect, useState, Fragment } from "react"
 import type { FolhaMotorista, CriarMotoristaDTO } from "../../types/Motorista"
-import { buscarFolha, atualizarDescontos, zerarDias, listarMotoristas, atualizarMotorista, deletarMotorista } from "../../api/motoristaApi"
+import { buscarFolha, zerarDias, listarMotoristas, atualizarMotorista, deletarMotorista } from "../../api/motoristaApi"
 import toast from "react-hot-toast"
 
 export function FolhaTable() {
   const [folhas, setFolhas] = useState<FolhaMotorista[]>([])
-  const [descontos, setDescontos] = useState<Record<number, string>>({})
   const [editando, setEditando] = useState<number | null>(null)
   const [form, setForm] = useState<CriarMotoristaDTO>({ nome: "", apelido: "", cpf: "", telefone: "", valorDiaria: 0 })
   const [loading, setLoading] = useState(true)
@@ -17,11 +16,8 @@ export function FolhaTable() {
     try {
       const motoristas = await listarMotoristas()
       const dados = await Promise.all(motoristas.map(m => buscarFolha(m.id)))
-      const ordenado = dados.sort((a, b) => b.diasTrabalhados - a.diasTrabalhados)
+      const ordenado = dados.sort((a, b) => (b.diasComoMotorista + b.diasComoAjudante) - (a.diasComoMotorista + a.diasComoAjudante))
       setFolhas(ordenado)
-      const descontosIniciais: Record<number, string> = {}
-      ordenado.forEach(f => { descontosIniciais[f.motoristaId] = String(f.descontos) })
-      setDescontos(descontosIniciais)
     } catch {
       toast.error("Erro ao carregar folhas")
     } finally {
@@ -30,16 +26,6 @@ export function FolhaTable() {
   }
 
   useEffect(() => { carregarFolhas() }, [])
-
-  async function handleDesconto(id: number) {
-    const valor = parseFloat(descontos[id] || "0")
-    try {
-      await atualizarDescontos(id, valor)
-      carregarFolhas()
-    } catch {
-      toast.error("Erro ao atualizar desconto")
-    }
-  }
 
   async function handleZerarMes() {
     if (!confirm("Deseja zerar os dias de todos os motoristas?")) return
@@ -96,10 +82,8 @@ export function FolhaTable() {
           <thead>
             <tr className="border-b border-[#1e293b] text-slate-400 text-sm uppercase tracking-wider">
               <th className="px-6 py-3 text-left">Motorista</th>
-              <th className="px-6 py-3 text-center">Dias</th>
-              <th className="px-6 py-3 text-center">Diária</th>
-              <th className="px-6 py-3 text-center">Descontos</th>
-              <th className="px-6 py-3 text-center">Líquido</th>
+              <th className="px-6 py-3 text-center">Dias Condutor</th>
+              <th className="px-6 py-3 text-center">Dias Ajudante</th>
               <th className="px-6 py-3 text-center">Ações</th>
             </tr>
           </thead>
@@ -108,19 +92,8 @@ export function FolhaTable() {
               <Fragment key={f.motoristaId}>
                 <tr className="border-b border-[#1e293b] hover:bg-[#1e293b] transition-colors">
                   <td className="px-6 py-3 text-white font-medium">{f.apelido || f.nome}</td>
-                  <td className="px-6 py-3 text-center text-slate-300">{f.diasTrabalhados}</td>
-                  <td className="px-6 py-3 text-center text-slate-300">R$ {f.valorDiaria.toFixed(2)}</td>
-                  <td className="px-6 py-3 text-center">
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={descontos[f.motoristaId] ?? "0"}
-                      onChange={e => setDescontos({ ...descontos, [f.motoristaId]: e.target.value })}
-                      onBlur={() => handleDesconto(f.motoristaId)}
-                      className="w-24 bg-[#1e293b] text-white border border-[#334155] rounded-lg px-3 py-1 text-sm text-center focus:outline-none focus:border-orange-500"
-                    />
-                  </td>
-                  <td className="px-6 py-3 text-center font-semibold text-orange-400">R$ {f.valorLiquido.toFixed(2)}</td>
+                  <td className="px-6 py-3 text-center text-slate-300">{f.diasComoMotorista}</td>
+                  <td className="px-6 py-3 text-center text-slate-300">{f.diasComoAjudante}</td>
                   <td className="px-6 py-3 text-center">
                     <div className="flex justify-center gap-2">
                       <button onClick={() => abrirEdicao(f)} className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all">
@@ -134,7 +107,7 @@ export function FolhaTable() {
                 </tr>
                 {editando === f.motoristaId && (
                   <tr className="border-b border-blue-500/30 bg-[#1e293b]">
-                    <td colSpan={6} className="px-6 py-4">
+                    <td colSpan={4} className="px-6 py-4">
                       <div className="grid grid-cols-3 gap-3 mb-3">
                         <input placeholder="Nome" value={form.nome} onChange={e => setForm({ ...form, nome: e.target.value })} className={inputClass} />
                         <input placeholder="Apelido" value={form.apelido} onChange={e => setForm({ ...form, apelido: e.target.value })} className={inputClass} />

@@ -59,7 +59,7 @@ export function ClienteForm({ onCadastrado }: Props) {
             value={cnpj}
             onChange={e => setCnpj(e.target.value)}
             onBlur={handleCnpjBlur}
-            maxLength={14}
+            maxLength={18}
             className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
           />
           {erroCnpj && <small className="text-red-400 mt-1 block">{erroCnpj}</small>}

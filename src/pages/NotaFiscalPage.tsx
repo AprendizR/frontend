@@ -16,9 +16,10 @@ export function NotaFiscalPage() {
   async function carregarNotas(f: FiltrosNotasFiscais = filtros) {
     try {
       const dados = await buscarNotasFiscais(f)
+      console.log(dados)
       setNotaFiscal(dados.content)
-      setTotalPages(dados.totalPages)
-      setTotalElements(dados.totalElements)
+      setTotalPages(dados.page.totalPages)
+      setTotalElements(dados.page.totalElements)
     } catch {
       toast.error("Erro ao carregar as notas fiscais")
     }
@@ -43,7 +44,7 @@ export function NotaFiscalPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white mb-6">Notas Fiscais Cadastradas</h2>
+        <h2 className="text-2xl font-bold text-white">Notas Fiscais Cadastradas</h2>
         <span className="text-slate-400 text-sm">{totalElements} {totalElements === 1 ? "nota" : "notas"}</span>
       </div>
 
