@@ -4,6 +4,7 @@ export function useCep() {
   const [cep, setCep] = useState("")
   const [cidade, setCidade] = useState("")
   const [endereco, setEndereco] = useState("")
+  const [bairro, setBairro] = useState("")
   const [erroCep, setErroCep] = useState("")
 
   const consultarCep = async () => {
@@ -44,5 +45,5 @@ export function useCep() {
     setErroCep("")
   }
 
-  return { cep, setCep, cidade, setCidade, endereco, setEndereco, erroCep, consultarCep, resetCep }
+  return { cep, setCep, cidade, setCidade, endereco, setEndereco, bairro, setBairro, erroCep, consultarCep, resetCep }
 }

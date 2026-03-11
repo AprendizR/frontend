@@ -13,11 +13,11 @@ type Props = {
 
 export function ClienteList({ cliente, onAtualizado }: Props) {
   const [editando, setEditando] = useState<Cliente | null>(null)
-  const [form, setForm] = useState<CriarClienteDTO>({ nome: "", cnpj: "", cidade: "", endereco: "", cep: "" })
+  const [form, setForm] = useState<CriarClienteDTO>({ nome: "", cnpj: "", cidade: "", endereco: "", bairro: "", cep: "" })
 
   function abrirEdicao(c: Cliente) {
     setEditando(c)
-    setForm({ nome: c.nome, cnpj: c.cnpj, cidade: c.cidade, endereco: c.endereco, cep: c.cep })
+    setForm({ nome: c.nome, cnpj: c.cnpj, cidade: c.cidade, endereco: c.endereco, bairro: c.bairro, cep: c.cep })
   }
 
   async function handleSalvar() {

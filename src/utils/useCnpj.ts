@@ -4,7 +4,8 @@ export function useCnpj() {
     const [cnpj, setCnpj] = useState("")
     const [erroCnpj, setErroCnpj] = useState("")
     const [carregando, setCarregando] = useState(false)
-    const [razao_social, setRazao_social] = useState("")
+    const [nome_fantasia, setNome_fantasia] = useState("")
+    const [razao_social, setRazao_social] = useState("")    
     const [cep, setCep] = useState("")
     const [logradouro, setLogradouro] = useState("")
     const [municipio, setMunicipio] = useState("")
@@ -28,7 +29,7 @@ export function useCnpj() {
                 setErroCnpj("CNPJ não localizado")
                 return null
             }
-
+            setNome_fantasia(data.nome_fantasia || "")
             setRazao_social(data.razao_social || "")
             setCep(data.cep || "")
             setLogradouro(data.logradouro || "")
@@ -45,6 +46,7 @@ export function useCnpj() {
     }
 
     const resetCnpj = () => {
+        setNome_fantasia("")
         setRazao_social("")
         setCep("")
         setLogradouro("")
@@ -52,5 +54,5 @@ export function useCnpj() {
         setErroCnpj("")
     }
 
-    return { cnpj, setCnpj, erroCnpj, cep, setCep, logradouro, municipio, carregando, consultarCnpj, resetCnpj }
+    return { cnpj, setCnpj, erroCnpj, nome_fantasia, razao_social, cep, setCep, logradouro, municipio, carregando, consultarCnpj, resetCnpj }
 }

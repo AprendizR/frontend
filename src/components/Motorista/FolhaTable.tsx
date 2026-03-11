@@ -71,7 +71,7 @@ export function FolhaTable() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-white">Folha do Mês</h3>
+        <h3 className="text-lg font-semibold text-white">Resumo do Mês</h3>
         <button onClick={handleZerarMes} className="px-4 py-2 text-sm border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors">
           Zerar Mês
         </button>

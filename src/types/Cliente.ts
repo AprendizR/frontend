@@ -4,6 +4,7 @@ export interface Cliente {
   cnpj: string
   cidade: string
   endereco: string
+  bairro: string
   cep: string
 }
 
@@ -12,5 +13,6 @@ export interface CriarClienteDTO {
   cnpj: string
   cidade: string
   endereco: string
+  bairro: string
   cep: string 
 }
