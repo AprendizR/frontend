@@ -3,11 +3,11 @@ import { DashboardPage } from "./pages/DashboardPage"
 import { CargasPage } from "./pages/CargasPage"
 import { NotaFiscalPage } from "./pages/NotaFiscalPage"
 import { Header } from "./components/layout/Header"
-import { OcorrenciasPage } from "./pages/OcorrenciasPage"
 import { MotoristasPage } from "./pages/MotoristasPage"
 import { VeiculosPage } from "./pages/VeiculosPage"
 import { ClientePage } from "./pages/ClientePage"
 import { Toaster } from "react-hot-toast"
+import { FaturamentoPage } from "./pages/FaturamentoPage"
 
 export default function App() {
   return (
@@ -22,7 +22,7 @@ export default function App() {
           <Route path="/motoristas" element={<MotoristasPage />} />
           <Route path="/veiculos" element={<VeiculosPage />} />
           <Route path="/clientes" element={<ClientePage />} />
-          <Route path="/ocorrencias" element={<OcorrenciasPage />} />
+          <Route path="/faturamento" element={<FaturamentoPage />} />
 
         </Routes>
       </main>

@@ -61,25 +61,47 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
       <h3 className="text-lg font-semibold text-white mb-4">Cadastrar Nota Fiscal</h3>
 
       <div className="grid grid-cols-2 gap-4 flex-1">
-        <input placeholder="Número da NF" value={numero} onChange={(e) => setNumero(e.target.value)}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
-        <ClienteAutocomplete placeholder="Remetente" value={remetente} onChange={setRemetente} onSelect={() => { }}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
-        <ClienteAutocomplete placeholder="Destinatário" value={destinatario} onChange={setDestinatario} onSelect={handleDestinatarioSelect}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
         <div>
-          <input placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={consultarCep} maxLength={8}
+          <label className="block text-slate-400 text-sm mb-1">Número da NF</label>
+          <input value={numero} onChange={(e) => setNumero(e.target.value)}
+            className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+        </div>
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Remetente</label>
+          <ClienteAutocomplete value={remetente} onChange={setRemetente} onSelect={() => { }}
+            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+        </div>
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Destinatário</label>
+          <ClienteAutocomplete value={destinatario} onChange={setDestinatario} onSelect={handleDestinatarioSelect}
+            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+        </div>
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">CEP</label>
+          <input value={cep} onChange={(e) => setCep(e.target.value)} onBlur={consultarCep} maxLength={8}
             className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
           {erroCep && <small className="text-red-400 mt-1 block">{erroCep}</small>}
         </div>
-        <input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
-        <input placeholder="Endereço" value={endereco} onChange={(e) => setEndereco(e.target.value)}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
-        <input type="number" step="0.01" placeholder="Valor (opcional)" value={valor} onChange={(e) => setValor(e.target.value)}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
-        <input type="number" placeholder="Volumes (opcional)" value={volumes} onChange={(e) => setVolumes(e.target.value)}
-          className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Cidade</label>
+          <input value={cidade} onChange={(e) => setCidade(e.target.value)}
+            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+        </div>
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Endereço</label>
+          <input value={endereco} onChange={(e) => setEndereco(e.target.value)}
+            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+        </div>
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Valor (Opcional)</label>
+          <input type="number" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)}
+            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+        </div>
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Volumes (Opcional)</label>
+          <input type="number" value={volumes} onChange={(e) => setVolumes(e.target.value)}
+            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+        </div>
       </div>
 
       <button type="submit" disabled={loading}

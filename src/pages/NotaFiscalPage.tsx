@@ -50,44 +50,44 @@ export function NotaFiscalPage() {
 
       <div className="grid grid-cols-2 gap-6 mb-6 items-stretch">
         {/* Filtros */}
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-4 grid grid-cols-1 gap-4">
-          <h3 className="text-lg font-semibold text-white">Filtros</h3>
-          <input
-            type="number"
-            placeholder="Nº da NF"
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
-            onChange={e => handleFiltroChange({ numero: e.target.value || undefined })}
-          />
-          <input
-            type="number"
-            placeholder="Ordem de Serviço"
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
-            onChange={e => handleFiltroChange({ ordemServico: e.target.value ? Number(e.target.value) : undefined })}
-          />
-          <ClienteAutocomplete
-            placeholder="Remetente"
-            value={filtros.remetente ?? ""}
-            onChange={valor => handleFiltroChange({ remetente: valor || undefined })}
-            onSelect={() => { }}
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full"
-          />
-          <ClienteAutocomplete
-            placeholder="Destinatário"
-            value={filtros.destinatario ?? ""}
-            onChange={valor => handleFiltroChange({ destinatario: valor || undefined })}
-            onSelect={() => { }}
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full"
-          />
-          <input
-            type="date"
-            className="bg-[#1e293b] text-white border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
-            onChange={e => handleFiltroChange({ dataInicio: e.target.value || undefined })}
-          />
-          <input
-            type="date"
-            className="bg-[#1e293b] text-white border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
-            onChange={e => handleFiltroChange({ dataFim: e.target.value || undefined })}
-          />
+        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-4 grid grid-cols-2 gap-4">
+          <h3 className="text-lg font-semibold text-white col-span-2">Filtros</h3>
+
+          <div>
+            <label className="block text-slate-400 text-sm mb-1">Número da NF</label>
+            <input type="number" className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
+              onChange={e => handleFiltroChange({ numero: e.target.value || undefined })} />
+          </div>
+
+          <div>
+            <label className="block text-slate-400 text-sm mb-1">Ordem de Serviço</label>
+            <input type="number" className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
+              onChange={e => handleFiltroChange({ ordemServico: e.target.value ? Number(e.target.value) : undefined })} />
+          </div>
+
+          <div className="col-span-2">
+            <label className="block text-slate-400 text-sm mb-1">Remetente</label>
+            <ClienteAutocomplete value={filtros.remetente ?? ""} onChange={valor => handleFiltroChange({ remetente: valor || undefined })} onSelect={() => { }}
+              className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          </div>
+
+          <div className="col-span-2">
+            <label className="block text-slate-400 text-sm mb-1">Destinatário</label>
+            <ClienteAutocomplete value={filtros.destinatario ?? ""} onChange={valor => handleFiltroChange({ destinatario: valor || undefined })} onSelect={() => { }}
+              className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          </div>
+
+          <div>
+            <label className="block text-slate-400 text-sm mb-1">Data de início</label>
+            <input type="date" className="w-full bg-[#1e293b] text-white border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
+              onChange={e => handleFiltroChange({ dataInicio: e.target.value || undefined })} />
+          </div>
+
+          <div>
+            <label className="block text-slate-400 text-sm mb-1">Data final</label>
+            <input type="date" className="w-full bg-[#1e293b] text-white border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
+              onChange={e => handleFiltroChange({ dataFim: e.target.value || undefined })} />
+          </div>
         </div>
 
         {/* Cadastro */}

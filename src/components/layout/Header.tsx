@@ -21,7 +21,7 @@ export function Header() {
           <NavLink to="/motoristas">Motoristas</NavLink>
           <NavLink to="/veiculos">Veículos</NavLink>
           <NavLink to="/clientes">Clientes</NavLink>
-          <NavLink to="/ocorrencias">Ocorrências</NavLink>
+          <NavLink to="/faturamento">Faturamento</NavLink>
         </nav>
       </div>
     </header>
