@@ -1,6 +1,7 @@
-import { useState, Fragment } from "react"
+import { useState, Fragment, useRef } from "react"
 import type { NotaFiscal } from "../../types/NotaFiscal"
 import { atualizarNota, deletarNota } from "../../api/notaFiscalApi"
+import { uploadFoto, removerFoto, urlFoto } from "../../api/fotoApi"
 import toast from "react-hot-toast"
 
 type EditarNota = {
@@ -21,6 +22,9 @@ type Props = {
 export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
   const [editando, setEditando] = useState<NotaFiscal | null>(null)
   const [form, setForm] = useState<EditarNota>({ numero: "", remetente: "", destinatario: "", cidade: "", endereco: "", valor: "", volumes: "" })
+  const [verFoto, setVerFoto] = useState<number | null>(null)
+  const [uploadando, setUploadando] = useState<number | null>(null)
+  const inputRefs = useRef<Record<number, HTMLInputElement | null>>({})
 
   function abrirEdicao(n: NotaFiscal) {
     setEditando(n)
@@ -36,25 +40,25 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
   }
 
   async function handleSalvar() {
-  if (!editando) return
-  try {
-    await atualizarNota(editando.id, {
-      numero: form.numero,
-      remetente: form.remetente,
-      destinatario: form.destinatario,
-      cep: editando.cep ?? "",
-      cidade: form.cidade,
-      endereco: form.endereco,
-      valor: form.valor ? parseFloat(form.valor) : undefined,
-      volumes: form.volumes ? parseInt(form.volumes) : undefined
-    })
-    toast.success("Nota atualizada!")
-    setEditando(null)
-    onAtualizado()
-  } catch (error) {
-    toast.error("Erro ao atualizar nota")
+    if (!editando) return
+    try {
+      await atualizarNota(editando.id, {
+        numero: form.numero,
+        remetente: form.remetente,
+        destinatario: form.destinatario,
+        cep: editando.cep ?? "",
+        cidade: form.cidade,
+        endereco: form.endereco,
+        valor: form.valor ? parseFloat(form.valor) : undefined,
+        volumes: form.volumes ? parseInt(form.volumes) : undefined
+      })
+      toast.success("Nota atualizada!")
+      setEditando(null)
+      onAtualizado()
+    } catch {
+      toast.error("Erro ao atualizar nota")
+    }
   }
-}
 
   async function handleDeletar(id: number) {
     if (!confirm("Deseja excluir esta nota?")) return
@@ -64,6 +68,34 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
       onAtualizado()
     } catch {
       toast.error("Erro ao excluir nota")
+    }
+  }
+
+  async function handleUpload(nf: NotaFiscal, e: React.ChangeEvent<HTMLInputElement>) {
+    const arquivo = e.target.files?.[0]
+    if (!arquivo) return
+    setUploadando(nf.id)
+    try {
+      await uploadFoto(nf.id, arquivo)
+      toast.success("Foto anexada!")
+      onAtualizado()
+    } catch {
+      toast.error("Erro ao anexar foto")
+    } finally {
+      setUploadando(null)
+      if (inputRefs.current[nf.id]) inputRefs.current[nf.id]!.value = ""
+    }
+  }
+
+  async function handleRemoverFoto(id: number) {
+    if (!confirm("Deseja remover a foto?")) return
+    try {
+      await removerFoto(id)
+      toast.success("Foto removida!")
+      setVerFoto(null)
+      onAtualizado()
+    } catch {
+      toast.error("Erro ao remover foto")
     }
   }
 
@@ -87,6 +119,7 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
               <th className="px-6 py-3 text-left">Remetente</th>
               <th className="px-6 py-3 text-left">Valor</th>
               <th className="px-6 py-3 text-center">Status</th>
+              <th className="px-6 py-3 text-center">Foto</th>
               <th className="px-6 py-3 text-center">Ações</th>
             </tr>
           </thead>
@@ -96,27 +129,66 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
                 <tr className="border-b border-[#1e293b] hover:bg-[#1e293b] transition-colors">
                   <td className="px-6 py-3 text-white font-medium">{nf.ordemServico}</td>
                   <td className="px-6 py-3 text-slate-300">{nf.numero}</td>
-                  <td className="px-6 py-3 text-slate-300">{nf.destinatario}</td>
-                  <td className="px-6 py-3 text-slate-300">{nf.cidade}</td>
-                  <td className="px-6 py-3 text-slate-300">{nf.remetente}</td>
+                  <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.destinatario}>{nf.destinatario}</td>
+                  <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.cidade}>{nf.cidade}</td>
+                  <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.remetente}>{nf.remetente}</td>
                   <td className="px-6 py-3 text-slate-300">{nf.valor}</td>
-                  <td className="px-6 py-3 text-center">{nf.status}</td>
+                  <td className="px-6 py-3 text-center max-w-[150px] truncate" title={nf.status}>
+                    <span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(nf.status)}`}> {nf.status}</span>
+                  </td>
+                  <td className="px-6 py-3 text-center">
+                    <input ref={el => { inputRefs.current[nf.id] = el }} type="file" accept="image/*,application/pdf" className="hidden" onChange={e => handleUpload(nf, e)} />
+                    {nf.temFoto ? (
+                      <div className="flex justify-center gap-1">
+                        <button onClick={() => setVerFoto(verFoto === nf.id ? null : nf.id)}
+                          className="px-3 py-1 text-xs border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all"> {nf.isPdf ? "📄" : "📷"}
+                        </button>
+                        <button onClick={() => handleRemoverFoto(nf.id)}
+                          className="px-2 py-1 text-xs border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all"> ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={() => inputRefs.current[nf.id]?.click()} disabled={uploadando === nf.id}
+                        className="px-3 py-1 text-xs border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
+                        {uploadando === nf.id ? "..." : "📎 Anexar"}
+                      </button>
+                    )}
+                  </td>
                   <td className="px-6 py-3 text-center">
                     <div className="flex justify-center gap-2">
                       <button onClick={() => abrirEdicao(nf)}
                         className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all">
-                        ✏️ Editar
+                        ✏️
                       </button>
                       <button onClick={() => handleDeletar(nf.id)}
                         className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">
-                        🗑️ Excluir
+                        🗑️
                       </button>
                     </div>
                   </td>
                 </tr>
+
+                {/* Preview da foto */}
+                {verFoto === nf.id && nf.temFoto && (
+                  <tr className="border-b border-[#1e293b] bg-[#1e293b]">
+                    <td colSpan={9} className="px-6 py-4 text-center">
+                      {nf.isPdf ? (
+                        <a href={urlFoto(nf.id)} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
+                          📄 Abrir PDF
+                        </a>
+                      ) : (
+                        <img src={urlFoto(nf.id)} alt="Comprovante"
+                          className="max-h-64 rounded-lg mx-auto object-contain" />
+                      )}
+                    </td>
+                  </tr>
+                )}
+
+                {/* Form de edição */}
                 {editando?.id === nf.id && (
-                  <tr key={`edit-${nf.id}`} className="border-b border-blue-500/30 bg-[#1e293b]">
-                    <td colSpan={7} className="px-6 py-4">
+                  <tr className="border-b border-blue-500/30 bg-[#1e293b]">
+                    <td colSpan={9} className="px-6 py-4">
                       <div className="grid grid-cols-3 gap-3 mb-3">
                         <input placeholder="Número" value={form.numero} onChange={e => setForm({ ...form, numero: e.target.value })} className={inputClass} />
                         <input placeholder="Remetente" value={form.remetente} onChange={e => setForm({ ...form, remetente: e.target.value })} className={inputClass} />
@@ -144,4 +216,17 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
       </div>
     </div>
   )
+}
+
+function getStatusColor(status: string): string {
+  const colors: Record<string, string> = {
+    PENDENTE: "bg-slate-500/20 text-slate-400 border border-slate-500/30",
+    EM_ROTA: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
+    ENTREGUE: "bg-green-500/20 text-green-400 border border-green-500/30",
+    DEVOLVIDO: "bg-orange-500/20 text-orange-400 border border-orange-500/30",
+    TROCA: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
+    COLETA: "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30",
+    CANCELADA: "bg-red-500/20 text-red-400 border border-red-500/30",
+  }
+  return colors[status] || "bg-slate-500/20 text-slate-400"
 }
