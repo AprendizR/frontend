@@ -1,0 +1,24 @@
+[33mb84000b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m Adicionado valor bairro em cadastro de clientes
+[33ma9d938f[m Adicionado labels nos forms
+[33m68795fd[m Atualizado tabela dos funcionarios e adicionado edição em cargas
+[33m75bf007[m Adiconado tabela de folha de pagamento para motoristas com edição de descontos
+[33m43026d3[m Adicionado edição e exclusão nas pages: cliente, veiculos, motoristas e notas fiscais
+[33m80d1979[m Removido email de cliente, adicionado apelido no motoristas
+[33m027b821[m Adicionado filtragem na nota fiscal page, e adicionado cadastro direto com CNPJ via API BRASIL API
+[33m211c536[m Adicionado filtragem na carga page, modificado types, api e carga
+[33m8412cf0[m Atualizado readme
+[33m2d29f6e[m Atualizado readme
+[33m25230e6[m Atualizado readme
+[33m5193e03[m Update README.md
+[33me9311e1[m Update README.md
+[33m4993d58[m Merge branch 'develop' of https://github.com/AprendizR/frontend into develop
+[33mef3b5fa[m Agora no subtipo é considerado a baixa das notas
+[33m1c803a1[m Update README.md
+[33m7fbefae[m Update README.md
+[33m1edb516[m Update README.md
+[33m0a8cfef[m Adicionado autocomplete em clientes. Cadastro de notas com clientes cadastrados. Puxando cep, endereco e cidade a partir do remetente
+[33m430c6c7[m Adicionado CEP complete no cadastro de NF
+[33m13383a5[m Adicionado botão de excluir notas dentro da carga
+[33m49500df[m Adicionado aba Clientes, clienteForm, clienteList. Adicionado no header Clientes e Ocorrencias
+[33m94ff26e[m commit inicial
+[33ma3e2816[m[33m ([m[1;31morigin/master[m[33m)[m commit front-end

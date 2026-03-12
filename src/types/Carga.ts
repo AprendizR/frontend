@@ -8,6 +8,8 @@ export interface NotaFiscalResumo {
   ordemServico: number
   numero: string
   entregue: boolean
+  temFoto: boolean
+  isPdf: boolean
 }
 
 export interface MotoristaResumo {

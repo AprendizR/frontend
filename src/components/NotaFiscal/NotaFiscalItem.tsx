@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { registrarOcorrencia, listarOcorrenciasPorOS } from "../../api/ocorrenciaApi"
+import { uploadFoto, removerFoto, urlFoto } from "../../api/fotoApi"
 import type { NotaFiscalResumo } from "../../types/Carga"
 import type { SubtipoOcorrencia, Ocorrencia } from "../../types/Ocorrencias"
 import toast from "react-hot-toast"
@@ -13,21 +14,20 @@ type Props = {
 export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
     const [expandido, setExpandido] = useState(false)
     const [registrandoBaixa, setRegistrandoBaixa] = useState(false)
-
     const [subtipo, setSubtipo] = useState<SubtipoOcorrencia>("ENTREGA_COMPLETA")
     const [nomeRecebedor, setNomeRecebedor] = useState("")
     const [observacao, setObservacao] = useState("")
-
     const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([])
     const [carregandoOcorrencias, setCarregandoOcorrencias] = useState(false)
-
     const [ultimaOcorrencia, setUltimaOcorrencia] = useState<Ocorrencia | null>(null)
     const [carregandoUltima, setCarregandoUltima] = useState(false)
+    const [temFoto, setTemFoto] = useState(nota.temFoto ?? false)
+    const [uploadandoFoto, setUploadandoFoto] = useState(false)
+    const [verFoto, setVerFoto] = useState(false)
+    const inputFotoRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
-        if (nota.entregue && !ultimaOcorrencia) {
-            buscarUltimaOcorrencia()
-        }
+        if (nota.entregue && !ultimaOcorrencia) buscarUltimaOcorrencia()
     }, [nota.entregue])
 
     async function buscarUltimaOcorrencia() {
@@ -40,26 +40,47 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                 )
                 setUltimaOcorrencia(ordenadas[0])
             }
-        } catch {
         } finally {
             setCarregandoUltima(false)
         }
     }
 
-    async function handleCheckboxChange() {
-        if (nota.entregue) {
-            toast.error("Nota já foi entregue")
-            return
+    async function handleUploadFoto(e: React.ChangeEvent<HTMLInputElement>) {
+        const arquivo = e.target.files?.[0]
+        if (!arquivo) return
+
+        setUploadandoFoto(true)
+        try {
+            await uploadFoto(nota.id, arquivo)
+            setTemFoto(true)
+            toast.success("Foto anexada!")
+        } catch {
+            toast.error("Erro ao anexar foto")
+        } finally {
+            setUploadandoFoto(false)
+            if (inputFotoRef.current) inputFotoRef.current.value = ""
         }
+    }
+
+    async function handleRemoverFoto() {
+        if (!confirm("Deseja remover a foto?")) return
+        try {
+            await removerFoto(nota.id)
+            setTemFoto(false)
+            setVerFoto(false)
+            toast.success("Foto removida!")
+        } catch {
+            toast.error("Erro ao remover foto")
+        }
+    }
+
+    async function handleCheckboxChange() {
+        if (nota.entregue) { toast.error("Nota já foi entregue"); return }
         setRegistrandoBaixa(true)
     }
 
     async function handleRegistrarBaixa() {
-        if (!nomeRecebedor.trim()) {
-            toast.error("Nome do recebedor é obrigatório")
-            return
-        }
-
+        if (!nomeRecebedor.trim()) { toast.error("Nome do recebedor é obrigatório"); return }
         try {
             await registrarOcorrencia({
                 ordemServico: nota.ordemServico,
@@ -67,27 +88,20 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                 nomeRecebedor: nomeRecebedor.trim(),
                 observacao: observacao.trim() || undefined
             })
-
             toast.success(`✅ Baixa registrada - OS #${nota.ordemServico}`)
             setRegistrandoBaixa(false)
             setNomeRecebedor("")
             setObservacao("")
             setSubtipo("ENTREGA_COMPLETA")
-
             await buscarUltimaOcorrencia()
             onAtualizar()
-        } catch (error) {
-            console.error("Erro:", error)
+        } catch {
             toast.error("Erro ao registrar baixa")
         }
     }
 
     async function carregarOcorrencias() {
-        if (ocorrencias.length > 0) {
-            setExpandido(!expandido)
-            return
-        }
-
+        if (ocorrencias.length > 0) { setExpandido(!expandido); return }
         setCarregandoOcorrencias(true)
         try {
             const dados = await listarOcorrenciasPorOS(nota.ordemServico)
@@ -114,32 +128,71 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                     <span className="text-slate-400">NF: {nota.numero}</span>
 
                     {nota.entregue && (
-                        carregandoUltima ? <span className="px-2 py-1 bg-[#1e293b] text-slate-400 text-xs font-bold rounded">Carregando...</span> : ultimaOcorrencia ?
-                            <span className={`px-2 py-1 text-white text-xs font-bold rounded inline-flex items-center gap-1 ${statusColors.badge}`}>
-                                <span>{getSubtipoIcon(ultimaOcorrencia.subtipo)}</span>
-                                <span>{formatSubtipoShort(ultimaOcorrencia.subtipo)}</span>
-                            </span> : <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">✓ ENTREGUE</span>
+                        carregandoUltima
+                            ? <span className="px-2 py-1 bg-[#1e293b] text-slate-400 text-xs font-bold rounded">Carregando...</span>
+                            : ultimaOcorrencia
+                                ? <span className={`px-2 py-1 text-white text-xs font-bold rounded inline-flex items-center gap-1 ${statusColors.badge}`}>
+                                    <span>{getSubtipoIcon(ultimaOcorrencia.subtipo)}</span>
+                                    <span>{formatSubtipoShort(ultimaOcorrencia.subtipo)}</span>
+                                </span>
+                                : <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">✓ ENTREGUE</span>
                     )}
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <button type="button" onClick={onExcluir} title="Excluir nota"
-                        className="px-3 py-2 text-sm border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all" >🗑️</button>
+                    {/* Botão foto */}
+                    <input ref={inputFotoRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleUploadFoto} />
+
+                    {temFoto ? (
+                        <div className="flex gap-1">
+                            <button onClick={() => setVerFoto(!verFoto)}
+                                className="px-3 py-2 text-sm border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all">
+                                📷
+                            </button>
+                            <button onClick={handleRemoverFoto}
+                                className="px-2 py-2 text-sm border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">
+                                ✕
+                            </button>
+                        </div>
+                    ) : (
+                        <button onClick={() => inputFotoRef.current?.click()} disabled={uploadandoFoto}
+                            className="px-3 py-2 text-sm border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
+                            {uploadandoFoto ? "..." : "📷"}
+                        </button>
+                    )}
+
+                    <button type="button" onClick={onExcluir}
+                        className="px-3 py-2 text-sm border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">🗑️</button>
 
                     <button type="button" onClick={carregarOcorrencias} disabled={carregandoOcorrencias}
-                        className={`px-4 py-2 text-sm border rounded-md font-medium transition-all ${expandido ? 'bg-blue-500/20 hover:bg-blue-500/30 border-blue-500/30 text-blue-400'
+                        className={`px-4 py-2 text-sm border rounded-md font-medium transition-all ${expandido
+                            ? 'bg-blue-500/20 hover:bg-blue-500/30 border-blue-500/30 text-blue-400'
                             : 'bg-transparent hover:bg-[#1e293b] border-[#334155] text-slate-300'}`}>
                         {carregandoOcorrencias ? "..." : expandido ? "▲ Ocultar" : "▼ Histórico"}
                     </button>
                 </div>
             </div>
 
+            {/* Preview da foto */}
+            {verFoto && temFoto && (
+                <div className="mt-4 p-3 bg-[#1e293b] rounded-lg border border-[#334155]">
+                    {nota.isPdf ? (
+                        <a href={urlFoto(nota.id)} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
+                            📄 Abrir PDF
+                        </a>
+                    ) : (
+                        <img src={urlFoto(nota.id)} alt="Comprovante"
+                            className="max-h-64 rounded-lg mx-auto object-contain"
+                            onError={() => { setTemFoto(false); setVerFoto(false) }} />
+                    )}
+                </div>
+            )}
+
+            {/* Form de baixa */}
             {registrandoBaixa && (
                 <div className="mt-4 p-5 bg-[#1e293b] rounded-lg border-2 border-blue-500/50">
-                    <h4 className="text-blue-400 font-semibold mb-4 text-base">
-                        📝 Registrar Baixa - OS #{nota.ordemServico}
-                    </h4>
-
+                    <h4 className="text-blue-400 font-semibold mb-4 text-base">📝 Registrar Baixa - OS #{nota.ordemServico}</h4>
                     <div className="grid gap-4">
                         <div>
                             <label className="block mb-2 text-sm font-semibold text-slate-300">Tipo de Ocorrência *</label>
@@ -170,26 +223,24 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                                 </optgroup>
                             </select>
                         </div>
-
                         <div>
                             <label className="block mb-2 text-sm font-semibold text-slate-300">Nome do Recebedor *</label>
-                            <input type="text" value={nomeRecebedor} onChange={e => setNomeRecebedor(e.target.value)} placeholder="Digite o nome completo"
+                            <input type="text" value={nomeRecebedor} onChange={e => setNomeRecebedor(e.target.value)}
                                 className="w-full px-3 py-2 bg-[#0f172a] text-white placeholder-slate-500 border border-[#334155] rounded-md focus:outline-none focus:border-orange-500" />
                         </div>
-
                         <div>
                             <label className="block mb-2 text-sm font-semibold text-slate-300">Observação (opcional)</label>
-                            <textarea value={observacao} onChange={e => setObservacao(e.target.value)} placeholder="Adicione detalhes se necessário..." rows={3}
+                            <textarea value={observacao} onChange={e => setObservacao(e.target.value)} rows={3}
                                 className="w-full px-3 py-2 bg-[#0f172a] text-white placeholder-slate-500 border border-[#334155] rounded-md resize-y focus:outline-none focus:border-orange-500" />
                         </div>
-
                         <div className="flex gap-3 justify-end">
                             <button type="button" onClick={() => { setRegistrandoBaixa(false); setNomeRecebedor(""); setObservacao(""); setSubtipo("ENTREGA_COMPLETA") }}
                                 className="px-6 py-2 border border-[#334155] rounded-md bg-transparent hover:bg-[#0f172a] text-slate-300 font-medium transition-colors">
                                 Cancelar
                             </button>
                             <button type="button" onClick={handleRegistrarBaixa}
-                                className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md font-semibold transition-colors"> ✓ Confirmar Baixa
+                                className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md font-semibold transition-colors">
+                                ✓ Confirmar Baixa
                             </button>
                         </div>
                     </div>
@@ -198,9 +249,7 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
 
             {expandido && ocorrencias.length > 0 && (
                 <div className="mt-4 p-4 bg-[#1e293b] rounded-lg border border-[#334155]">
-                    <h4 className="text-slate-400 text-sm font-semibold mb-3">
-                        📜 Histórico de Ocorrências ({ocorrencias.length})
-                    </h4>
+                    <h4 className="text-slate-400 text-sm font-semibold mb-3">📜 Histórico de Ocorrências ({ocorrencias.length})</h4>
                     <div className="flex flex-col gap-2">
                         {ocorrencias.map(ocorrencia => (
                             <div key={ocorrencia.id} className="p-3 bg-[#0f172a] rounded-md border border-[#334155] text-sm">
@@ -210,14 +259,8 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                                         {new Date(ocorrencia.dataOcorrencia).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
                                     </span>
                                 </div>
-                                {ocorrencia.nomeRecebedor && (
-                                    <div className="text-slate-400 mt-1">👤 {ocorrencia.nomeRecebedor}</div>
-                                )}
-                                {ocorrencia.observacao && (
-                                    <div className="mt-2 p-2 bg-[#1e293b] rounded text-xs text-slate-400">
-                                        💬 {ocorrencia.observacao}
-                                    </div>
-                                )}
+                                {ocorrencia.nomeRecebedor && <div className="text-slate-400 mt-1">👤 {ocorrencia.nomeRecebedor}</div>}
+                                {ocorrencia.observacao && <div className="mt-2 p-2 bg-[#1e293b] rounded text-xs text-slate-400">💬 {ocorrencia.observacao}</div>}
                             </div>
                         ))}
                     </div>
@@ -233,9 +276,9 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
     )
 }
 
+// funções helper iguais ao original
 function getStatusColors(subtipo?: SubtipoOcorrencia) {
     if (!subtipo) return { border: 'border-green-500', bg: 'bg-green-500/10', badge: 'bg-green-500' }
-
     const colors: Record<string, { border: string; bg: string; badge: string }> = {
         ENTREGA_COMPLETA: { border: 'border-green-500', bg: 'bg-green-500/10', badge: 'bg-green-500' },
         ENTREGA_PARCIAL: { border: 'border-orange-500', bg: 'bg-orange-500/10', badge: 'bg-orange-500' },
@@ -251,63 +294,38 @@ function getStatusColors(subtipo?: SubtipoOcorrencia) {
         CANCELADA_PELO_CLIENTE: { border: 'border-slate-600', bg: 'bg-slate-600/10', badge: 'bg-slate-600' },
         CANCELADA_OPERACIONAL: { border: 'border-slate-700', bg: 'bg-slate-700/10', badge: 'bg-slate-700' },
     }
-
     return colors[subtipo] || { border: 'border-green-500', bg: 'bg-green-500/10', badge: 'bg-green-500' }
 }
 
 function getSubtipoIcon(subtipo: SubtipoOcorrencia): string {
     const icons: Record<string, string> = {
-        ENTREGA_COMPLETA: "✓",
-        ENTREGA_PARCIAL: "⚠️",
-        ENTREGA_RECUSADA: "❌",
-        COLETA_COMPLETA: "📦",
-        COLETA_PARCIAL: "📦",
-        COLETA_NAO_EFETUADA: "❌",
-        TROCA_COMPLETA: "🔄",
-        TROCA_PARCIAL: "🔄",
-        TROCA_NAO_EFETUADA: "❌",
-        DESTINATARIO_AUSENTE: "🚫",
-        ENDERECO_INCORRETO: "📍",
-        CANCELADA_PELO_CLIENTE: "❌",
-        CANCELADA_OPERACIONAL: "❌"
+        ENTREGA_COMPLETA: "✓", ENTREGA_PARCIAL: "⚠️", ENTREGA_RECUSADA: "❌",
+        COLETA_COMPLETA: "📦", COLETA_PARCIAL: "📦", COLETA_NAO_EFETUADA: "❌",
+        TROCA_COMPLETA: "🔄", TROCA_PARCIAL: "🔄", TROCA_NAO_EFETUADA: "❌",
+        DESTINATARIO_AUSENTE: "🚫", ENDERECO_INCORRETO: "📍",
+        CANCELADA_PELO_CLIENTE: "❌", CANCELADA_OPERACIONAL: "❌"
     }
     return icons[subtipo] || "✓"
 }
 
 function formatSubtipoShort(subtipo: SubtipoOcorrencia): string {
     const labels: Record<string, string> = {
-        ENTREGA_COMPLETA: "Entregue",
-        ENTREGA_PARCIAL: "Parcial",
-        ENTREGA_RECUSADA: "Recusado",
-        COLETA_COMPLETA: "Coletado",
-        COLETA_PARCIAL: "Coleta Parcial",
-        COLETA_NAO_EFETUADA: "Não Coletado",
-        TROCA_COMPLETA: "Trocado",
-        TROCA_PARCIAL: "Troca Parcial",
-        TROCA_NAO_EFETUADA: "Não Trocado",
-        DESTINATARIO_AUSENTE: "Ausente",
-        ENDERECO_INCORRETO: "End. Incorreto",
-        CANCELADA_PELO_CLIENTE: "Cancelado",
-        CANCELADA_OPERACIONAL: "Cancelado Op."
+        ENTREGA_COMPLETA: "Entregue", ENTREGA_PARCIAL: "Parcial", ENTREGA_RECUSADA: "Recusado",
+        COLETA_COMPLETA: "Coletado", COLETA_PARCIAL: "Coleta Parcial", COLETA_NAO_EFETUADA: "Não Coletado",
+        TROCA_COMPLETA: "Trocado", TROCA_PARCIAL: "Troca Parcial", TROCA_NAO_EFETUADA: "Não Trocado",
+        DESTINATARIO_AUSENTE: "Ausente", ENDERECO_INCORRETO: "End. Incorreto",
+        CANCELADA_PELO_CLIENTE: "Cancelado", CANCELADA_OPERACIONAL: "Cancelado Op."
     }
     return labels[subtipo] || subtipo
 }
 
 function formatSubtipoFull(subtipo: string): string {
     const labels: Record<string, string> = {
-        ENTREGA_COMPLETA: "✓ Entrega Completa",
-        ENTREGA_PARCIAL: "⚠️ Entrega Parcial",
-        ENTREGA_RECUSADA: "❌ Entrega Recusada",
-        COLETA_COMPLETA: "📦 Coleta Completa",
-        COLETA_PARCIAL: "📦 Coleta Parcial",
-        COLETA_NAO_EFETUADA: "❌ Coleta Não Efetuada",
-        TROCA_COMPLETA: "🔄 Troca Completa",
-        TROCA_PARCIAL: "🔄 Troca Parcial",
-        TROCA_NAO_EFETUADA: "❌ Troca Não Efetuada",
-        DESTINATARIO_AUSENTE: "🚫 Destinatário Ausente",
-        ENDERECO_INCORRETO: "📍 Endereço Incorreto",
-        CANCELADA_PELO_CLIENTE: "❌ Cancelada pelo Cliente",
-        CANCELADA_OPERACIONAL: "❌ Cancelada Operacional"
+        ENTREGA_COMPLETA: "✓ Entrega Completa", ENTREGA_PARCIAL: "⚠️ Entrega Parcial", ENTREGA_RECUSADA: "❌ Entrega Recusada",
+        COLETA_COMPLETA: "📦 Coleta Completa", COLETA_PARCIAL: "📦 Coleta Parcial", COLETA_NAO_EFETUADA: "❌ Coleta Não Efetuada",
+        TROCA_COMPLETA: "🔄 Troca Completa", TROCA_PARCIAL: "🔄 Troca Parcial", TROCA_NAO_EFETUADA: "❌ Troca Não Efetuada",
+        DESTINATARIO_AUSENTE: "🚫 Destinatário Ausente", ENDERECO_INCORRETO: "📍 Endereço Incorreto",
+        CANCELADA_PELO_CLIENTE: "❌ Cancelada pelo Cliente", CANCELADA_OPERACIONAL: "❌ Cancelada Operacional"
     }
     return labels[subtipo] || subtipo
 }

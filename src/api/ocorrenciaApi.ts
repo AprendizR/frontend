@@ -8,20 +8,12 @@ export async function registrarOcorrencia(dto: CriarOcorrenciaDTO): Promise<Ocor
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dto)
   })
-
-  if (!response.ok) {
-    throw new Error("Erro ao registrar ocorrência")
-  }
-
+  if (!response.ok) throw new Error("Erro ao registrar ocorrência")
   return response.json()
 }
 
 export async function listarOcorrenciasPorOS(ordemServico: number): Promise<Ocorrencia[]> {
   const response = await fetch(`${API_BASE}/os/${ordemServico}`)
-
-  if (!response.ok) {
-    throw new Error("Erro ao listar ocorrências")
-  }
-
+  if (!response.ok) throw new Error("Erro ao buscar ocorrências")
   return response.json()
 }
