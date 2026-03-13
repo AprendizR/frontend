@@ -11,11 +11,17 @@ export type NotaFiscal = {
   id: number
   ordemServico: number
   numero: string
+  cliente?: {
+    id: number
+    nome: string
+    cnpj: string
+  }
   remetente: string
   destinatario: string
   cep?: string
   cidade?: string
   endereco?: string
+  frete?: number
   valor?: number
   volumes?: number
   status: StatusNota
@@ -25,11 +31,13 @@ export type NotaFiscal = {
 
 export type CriarNotaDTO = {
   numero?: string
+  clienteId?: number
   remetente: string
   destinatario?: string
   cep: string
   cidade: string
   endereco: string
+  frete?: number
   valor?: number
   volumes?: number
 }

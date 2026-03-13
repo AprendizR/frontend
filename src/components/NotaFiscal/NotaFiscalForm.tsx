@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { criarNotaFiscal } from "../../api/notaFiscalApi";
 import { ClienteAutocomplete } from "../Cliente/ClienteAutocomplete";
-import type { Cliente } from "../../types/Cliente";
 import toast from "react-hot-toast";
 import { useCep } from "../../utils/useCep";
 
@@ -10,49 +9,51 @@ type Props = {
 };
 
 export function NotaFiscalForm({ onCadastrado }: Props) {
-  const [numero, setNumero] = useState("");
-  const [remetente, setRemetente] = useState("");
-  const [destinatario, setDestinatario] = useState("");
-  const [valor, setValor] = useState("");
-  const [volumes, setVolumes] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [numero, setNumero] = useState("")
+  const [clienteId, setClienteId] = useState<number | undefined>()
+  const [clienteNome, setClienteNome] = useState("")
+  const [remetente, setRemetente] = useState("")
+  const [destinatario, setDestinatario] = useState("")
+  const [frete, setFrete] = useState("")
+  const [valor, setValor] = useState("")
+  const [volumes, setVolumes] = useState("")
+  const [loading, setLoading] = useState(false)
   const { cep, setCep, cidade, setCidade, endereco, setEndereco, erroCep, consultarCep, resetCep } = useCep()
 
-  function handleDestinatarioSelect(cliente: Cliente) {
-    setCep(cliente.cep)
-    setCidade(cliente.cidade)
-    setEndereco(cliente.endereco)
-  }
+  const inputClass = "w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
     try {
       const nota = await criarNotaFiscal({
         numero,
+        clienteId,
         remetente,
         destinatario,
         cep,
         cidade,
         endereco,
+        frete: frete ? parseFloat(frete) : undefined,
         valor: valor ? parseFloat(valor) : undefined,
         volumes: volumes ? parseInt(volumes) : undefined,
-      });
+      })
 
-      toast.success(`Nota cadastrada! OS: ${nota.ordemServico}`);
+      toast.success(`Nota cadastrada! OS: ${nota.ordemServico}`)
 
-      setNumero("");
-      setDestinatario("");
-      setValor("");
-      setVolumes("");
+      setNumero("")
+      setClienteId(undefined)
+      setDestinatario("")
+      setFrete("")
+      setValor("")
+      setVolumes("")
       resetCep()
-
-      onCadastrado();
-    } catch (error) {
-      toast.error("Erro ao cadastrar nota fiscal");
+      onCadastrado()
+    } catch {
+      toast.error("Erro ao cadastrar nota fiscal")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -63,44 +64,58 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
       <div className="grid grid-cols-2 gap-4 flex-1">
         <div>
           <label className="block text-slate-400 text-sm mb-1">Número da NF</label>
-          <input value={numero} onChange={(e) => setNumero(e.target.value)}
-            className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          <input value={numero} onChange={e => setNumero(e.target.value)} className={inputClass} />
         </div>
+
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Cliente</label>
+          <ClienteAutocomplete value={clienteNome} onChange={v => { setClienteNome(v); setClienteId(undefined) }} onSelect={c => { setClienteId(c.id); setClienteNome(c.nome) }}
+            className={inputClass} />
+        </div>
+
         <div>
           <label className="block text-slate-400 text-sm mb-1">Remetente</label>
-          <ClienteAutocomplete value={remetente} onChange={setRemetente} onSelect={() => { }}
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          <ClienteAutocomplete value={remetente} onChange={setRemetente} onSelect={c => setRemetente(c.nome)} className={inputClass} />
         </div>
+
         <div>
           <label className="block text-slate-400 text-sm mb-1">Destinatário</label>
-          <ClienteAutocomplete value={destinatario} onChange={setDestinatario} onSelect={handleDestinatarioSelect}
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          <ClienteAutocomplete value={destinatario} onChange={setDestinatario} onSelect={c => {
+            setDestinatario(c.nome)
+            setCep(c.cep)
+            setCidade(c.cidade)
+            setEndereco(c.endereco)
+          }} className={inputClass} />
         </div>
         <div>
           <label className="block text-slate-400 text-sm mb-1">CEP</label>
-          <input value={cep} onChange={(e) => setCep(e.target.value)} onBlur={consultarCep} maxLength={8}
-            className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+          <input value={cep} onChange={e => setCep(e.target.value)} onBlur={consultarCep} maxLength={8} className={inputClass} />
           {erroCep && <small className="text-red-400 mt-1 block">{erroCep}</small>}
         </div>
+
         <div>
           <label className="block text-slate-400 text-sm mb-1">Cidade</label>
-          <input value={cidade} onChange={(e) => setCidade(e.target.value)}
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          <input value={cidade} onChange={e => setCidade(e.target.value)} className={inputClass} />
         </div>
+
         <div>
           <label className="block text-slate-400 text-sm mb-1">Endereço</label>
-          <input value={endereco} onChange={(e) => setEndereco(e.target.value)}
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          <input value={endereco} onChange={e => setEndereco(e.target.value)} className={inputClass} />
         </div>
+
         <div>
-          <label className="block text-slate-400 text-sm mb-1">Valor (Opcional)</label>
-          <input type="number" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)}
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          <label className="block text-slate-400 text-sm mb-1">Frete <span className="text-slate-600">(opcional)</span></label>
+          <input type="number" step="0.01" value={frete} onChange={e => setFrete(e.target.value)} className={inputClass} />
         </div>
+
         <div>
-          <label className="block text-slate-400 text-sm mb-1">Volumes (Opcional)</label>
-          <input type="number" value={volumes} onChange={(e) => setVolumes(e.target.value)}
-            className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
+          <label className="block text-slate-400 text-sm mb-1">Valor <span className="text-slate-600">(opcional)</span></label>
+          <input type="number" step="0.01" value={valor} onChange={e => setValor(e.target.value)} className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Volumes <span className="text-slate-600">(opcional)</span></label>
+          <input type="number" value={volumes} onChange={e => setVolumes(e.target.value)} className={inputClass} />
         </div>
       </div>
 
