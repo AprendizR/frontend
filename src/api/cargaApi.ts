@@ -79,3 +79,16 @@ export async function excluirCarga(id: number): Promise<void> {
   const response = await fetch(`${API_BASE}/${id}`, { method: "DELETE" })
   if (!response.ok) throw new Error("Erro ao excluir carga")
 }
+
+export async function baixarRomaneio(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/${id}/romaneio`)
+  if (!response.ok) throw new Error("Erro ao gerar romaneio")
+
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = `romaneio_${id}.xlsx`
+  link.click()
+  URL.revokeObjectURL(url)
+}

@@ -6,6 +6,7 @@ import { NotaFiscalItem } from "../NotaFiscal/NotaFiscalItem"
 import { AdicionarNotasNaCarga } from "../Carga/AdicionarNotasNaCarga"
 import { MotoristaAutocomplete } from "../Motorista/MotoristaAutocomplete"
 import { VeiculoAutocomplete } from "../Veiculo/VeiculoAutocomplete"
+import { baixarRomaneio } from "../../api/cargaApi"
 import toast from "react-hot-toast"
 
 type Props = {
@@ -82,6 +83,15 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
     }
   }
 
+  async function handleBaixarRomaneio() {
+    try {
+      await baixarRomaneio(carga.id)
+      toast.success("Romaneio gerado!")
+    } catch {
+      toast.error("Erro ao gerar romaneio")
+    }
+  }
+
   const totalNotas = cargaDetalhada?.notasFiscais?.length || 0
   const notasEntregues = cargaDetalhada?.notasFiscais?.filter(n => n.entregue).length || 0
   const progresso = totalNotas > 0 ? (notasEntregues / totalNotas) * 100 : 0
@@ -119,6 +129,12 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
               className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all text-sm"
             >
               🗑️
+            </button>
+            <button
+              onClick={e => { e.stopPropagation(); handleBaixarRomaneio() }}
+              className="px-3 py-1 border border-green-500/30 rounded-md bg-transparent hover:bg-green-500/10 text-green-400 transition-all text-sm"
+            >
+              📊
             </button>
             <span className="text-slate-500 text-sm">{loading ? "..." : aberto ? "▲" : "▼"}</span>
           </div>
