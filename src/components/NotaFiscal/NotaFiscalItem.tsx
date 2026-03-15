@@ -21,10 +21,10 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
     const [carregandoOcorrencias, setCarregandoOcorrencias] = useState(false)
     const [ultimaOcorrencia, setUltimaOcorrencia] = useState<Ocorrencia | null>(null)
     const [carregandoUltima, setCarregandoUltima] = useState(false)
-    const [temFoto, setTemFoto] = useState(nota.temFoto ?? false)
-    const [uploadandoFoto, setUploadandoFoto] = useState(false)
-    const [verFoto, setVerFoto] = useState(false)
+    const [verFotos, setVerFotos] = useState(false)
+    const [fotos, setFotos] = useState<string[]>(nota.fotos ?? [])
     const inputFotoRef = useRef<HTMLInputElement>(null)
+    const [uploadandoFoto, setUploadandoFoto] = useState(false)
 
     useEffect(() => {
         if (nota.entregue && !ultimaOcorrencia) buscarUltimaOcorrencia()
@@ -48,12 +48,11 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
     async function handleUploadFoto(e: React.ChangeEvent<HTMLInputElement>) {
         const arquivo = e.target.files?.[0]
         if (!arquivo) return
-
         setUploadandoFoto(true)
         try {
             await uploadFoto(nota.id, arquivo)
-            setTemFoto(true)
             toast.success("Foto anexada!")
+            onAtualizar()
         } catch {
             toast.error("Erro ao anexar foto")
         } finally {
@@ -62,13 +61,13 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
         }
     }
 
-    async function handleRemoverFoto() {
-        if (!confirm("Deseja remover a foto?")) return
+    async function handleRemoverFoto(caminho: string) {
+        if (!confirm("Deseja remover esta foto?")) return
         try {
-            await removerFoto(nota.id)
-            setTemFoto(false)
-            setVerFoto(false)
+            await removerFoto(nota.id, caminho)
+            setFotos(prev => prev.filter(f => f !== caminho))
             toast.success("Foto removida!")
+            onAtualizar()
         } catch {
             toast.error("Erro ao remover foto")
         }
@@ -118,6 +117,8 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
 
     return (
         <div className={`border-2 rounded-lg p-4 transition-all ${nota.entregue ? statusColors.border : 'border-[#334155]'} ${nota.entregue ? statusColors.bg : 'bg-[#0f172a]'}`}>
+
+            {/* Linha principal */}
             <div className="flex items-center gap-4">
                 <input type="checkbox" checked={nota.entregue} onChange={handleCheckboxChange} disabled={nota.entregue}
                     className={`w-6 h-6 accent-green-500 ${nota.entregue ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
@@ -140,26 +141,19 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* Botão foto */}
                     <input ref={inputFotoRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleUploadFoto} />
 
-                    {temFoto ? (
-                        <div className="flex gap-1">
-                            <button onClick={() => setVerFoto(!verFoto)}
-                                className="px-3 py-2 text-sm border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all">
-                                📷
-                            </button>
-                            <button onClick={handleRemoverFoto}
-                                className="px-2 py-2 text-sm border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">
-                                ✕
-                            </button>
-                        </div>
-                    ) : (
-                        <button onClick={() => inputFotoRef.current?.click()} disabled={uploadandoFoto}
-                            className="px-3 py-2 text-sm border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
-                            {uploadandoFoto ? "..." : "📷"}
+                    {fotos.length > 0 && (
+                        <button onClick={() => setVerFotos(!verFotos)}
+                            className="px-3 py-2 text-sm border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all">
+                            📷 {fotos.length}
                         </button>
                     )}
+
+                    <button onClick={() => inputFotoRef.current?.click()} disabled={uploadandoFoto}
+                        className="px-3 py-2 text-sm border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
+                        {uploadandoFoto ? "..." : "📎"}
+                    </button>
 
                     <button type="button" onClick={onExcluir}
                         className="px-3 py-2 text-sm border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">🗑️</button>
@@ -173,19 +167,28 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                 </div>
             </div>
 
-            {/* Preview da foto */}
-            {verFoto && temFoto && (
-                <div className="mt-4 p-3 bg-[#1e293b] rounded-lg border border-[#334155]">
-                    {nota.isPdf ? (
-                        <a href={urlFoto(nota.id)} target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
-                            📄 Abrir PDF
-                        </a>
-                    ) : (
-                        <img src={urlFoto(nota.id)} alt="Comprovante"
-                            className="max-h-64 rounded-lg mx-auto object-contain"
-                            onError={() => { setTemFoto(false); setVerFoto(false) }} />
-                    )}
+            {/* Preview de fotos */}
+            {verFotos && fotos.length > 0 && (
+                <div className="mt-4 p-4 bg-[#1e293b] rounded-lg border border-[#334155]">
+                    <h4 className="text-slate-400 text-sm font-semibold mb-3">📷 Fotos ({fotos.length})</h4>
+                    <div className="flex flex-wrap gap-3">
+                        {fotos.map(caminho => (
+                            <div key={caminho} className="relative group">
+                                {caminho.endsWith(".pdf") ? (
+                                    <a href={urlFoto(nota.id, caminho)} target="_blank" rel="noopener noreferrer">
+                                        📄 Abrir PDF
+                                    </a>
+                                ) : (
+                                    <img src={urlFoto(nota.id, caminho)} alt="Comprovante"
+                                        className="h-32 w-32 object-cover rounded-lg border border-[#334155]" />
+                                )}
+                                <button onClick={() => handleRemoverFoto(caminho)}
+                                    className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs hidden group-hover:flex items-center justify-center">
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
 
@@ -247,6 +250,7 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                 </div>
             )}
 
+            {/* Histórico de ocorrências */}
             {expandido && ocorrencias.length > 0 && (
                 <div className="mt-4 p-4 bg-[#1e293b] rounded-lg border border-[#334155]">
                     <h4 className="text-slate-400 text-sm font-semibold mb-3">📜 Histórico de Ocorrências ({ocorrencias.length})</h4>
@@ -276,7 +280,6 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
     )
 }
 
-// funções helper iguais ao original
 function getStatusColors(subtipo?: SubtipoOcorrencia) {
     if (!subtipo) return { border: 'border-green-500', bg: 'bg-green-500/10', badge: 'bg-green-500' }
     const colors: Record<string, { border: string; bg: string; badge: string }> = {

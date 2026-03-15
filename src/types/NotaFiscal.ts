@@ -25,8 +25,7 @@ export type NotaFiscal = {
   valor?: number
   volumes?: number
   status: StatusNota
-  temFoto: boolean
-  isPdf: boolean
+  fotos: string[]
 }
 
 export type CriarNotaDTO = {

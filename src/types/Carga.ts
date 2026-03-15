@@ -7,9 +7,11 @@ export interface NotaFiscalResumo {
   id: number
   ordemServico: number
   numero: string
+  destinatario: string
+  cidade: string
+  remetente: string
   entregue: boolean
-  temFoto: boolean
-  isPdf: boolean
+  fotos: string[]
 }
 
 export interface MotoristaResumo {

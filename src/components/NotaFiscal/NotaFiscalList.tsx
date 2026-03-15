@@ -87,10 +87,10 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
     }
   }
 
-  async function handleRemoverFoto(id: number) {
-    if (!confirm("Deseja remover a foto?")) return
+  async function handleRemoverFoto(notaId: number, caminho: string) {
+    if (!confirm("Deseja remover esta foto?")) return
     try {
-      await removerFoto(id)
+      await removerFoto(notaId, caminho)
       toast.success("Foto removida!")
       setVerFoto(null)
       onAtualizado()
@@ -119,7 +119,7 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
               <th className="px-6 py-3 text-left">Remetente</th>
               <th className="px-6 py-3 text-left">Valor</th>
               <th className="px-6 py-3 text-center">Status</th>
-              <th className="px-6 py-3 text-center">Foto</th>
+              <th className="px-6 py-3 text-center">Fotos</th>
               <th className="px-6 py-3 text-center">Ações</th>
             </tr>
           </thead>
@@ -133,54 +133,56 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
                   <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.cidade}>{nf.cidade}</td>
                   <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.remetente}>{nf.remetente}</td>
                   <td className="px-6 py-3 text-slate-300">{nf.valor}</td>
-                  <td className="px-6 py-3 text-center max-w-[150px] truncate" title={nf.status}>
-                    <span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(nf.status)}`}> {nf.status}</span>
+                  <td className="px-6 py-3 text-center">
+                    <span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(nf.status)}`}>{nf.status}</span>
                   </td>
                   <td className="px-6 py-3 text-center">
                     <input ref={el => { inputRefs.current[nf.id] = el }} type="file" accept="image/*,application/pdf" className="hidden" onChange={e => handleUpload(nf, e)} />
-                    {nf.temFoto ? (
-                      <div className="flex justify-center gap-1">
+                    <div className="flex justify-center gap-1">
+                      {nf.fotos.length > 0 && (
                         <button onClick={() => setVerFoto(verFoto === nf.id ? null : nf.id)}
-                          className="px-3 py-1 text-xs border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all"> {nf.isPdf ? "📄" : "📷"}
+                          className="px-3 py-1 text-xs border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all">
+                          📷 {nf.fotos.length}
                         </button>
-                        <button onClick={() => handleRemoverFoto(nf.id)}
-                          className="px-2 py-1 text-xs border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all"> ✕
-                        </button>
-                      </div>
-                    ) : (
+                      )}
                       <button onClick={() => inputRefs.current[nf.id]?.click()} disabled={uploadando === nf.id}
                         className="px-3 py-1 text-xs border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
-                        {uploadando === nf.id ? "..." : "📎 Anexar"}
+                        {uploadando === nf.id ? "..." : "📎"}
                       </button>
-                    )}
+                    </div>
                   </td>
                   <td className="px-6 py-3 text-center">
                     <div className="flex justify-center gap-2">
                       <button onClick={() => abrirEdicao(nf)}
-                        className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all">
-                        ✏️
-                      </button>
+                        className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all">✏️</button>
                       <button onClick={() => handleDeletar(nf.id)}
-                        className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">
-                        🗑️
-                      </button>
+                        className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">🗑️</button>
                     </div>
                   </td>
                 </tr>
 
-                {/* Preview da foto */}
-                {verFoto === nf.id && nf.temFoto && (
+                {/* Preview das fotos */}
+                {verFoto === nf.id && nf.fotos.length > 0 && (
                   <tr className="border-b border-[#1e293b] bg-[#1e293b]">
-                    <td colSpan={9} className="px-6 py-4 text-center">
-                      {nf.isPdf ? (
-                        <a href={urlFoto(nf.id)} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
-                          📄 Abrir PDF
-                        </a>
-                      ) : (
-                        <img src={urlFoto(nf.id)} alt="Comprovante"
-                          className="max-h-64 rounded-lg mx-auto object-contain" />
-                      )}
+                    <td colSpan={9} className="px-6 py-4">
+                      <div className="flex flex-wrap gap-3 justify-center">
+                        {nf.fotos.map(caminho => (
+                          <div key={caminho} className="relative group">
+                            {caminho.endsWith(".pdf") ? (
+                              <a href={urlFoto(nf.id, caminho)} target="_blank" rel="noopener noreferrer">
+                                📄 Abrir PDF
+                              </a>
+                            ) : (
+                              <img src={urlFoto(nf.id, caminho)} alt="Comprovante"
+                                className="h-32 w-32 object-cover rounded-lg border border-[#334155]" />
+                            )}
+                            <button onClick={() => handleRemoverFoto(nf.id, caminho)}
+                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs hidden group-hover:flex items-center justify-center">
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </td>
                   </tr>
                 )}
