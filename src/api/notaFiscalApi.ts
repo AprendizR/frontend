@@ -73,3 +73,13 @@ export async function deletarNota(id: number): Promise<void> {
 
   if (!response.ok) throw new Error("Erro ao deletar nota")
 }
+
+export async function gerarRelatorio(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/${id}/relatorio`)
+  if (!response.ok) throw new Error("Erro ao gerar relatório")
+
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  window.open(url, "_blank")
+  setTimeout(() => URL.revokeObjectURL(url), 10000)
+}

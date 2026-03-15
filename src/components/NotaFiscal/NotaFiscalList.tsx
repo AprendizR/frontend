@@ -2,6 +2,7 @@ import { useState, Fragment, useRef } from "react"
 import type { NotaFiscal } from "../../types/NotaFiscal"
 import { atualizarNota, deletarNota } from "../../api/notaFiscalApi"
 import { uploadFoto, removerFoto, urlFoto } from "../../api/fotoApi"
+import { gerarRelatorio } from "../../api/notaFiscalApi"
 import toast from "react-hot-toast"
 
 type EditarNota = {
@@ -180,6 +181,15 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
                               className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs hidden group-hover:flex items-center justify-center">
                               ✕
                             </button>
+                            {nf.status === "ENTREGUE" && (
+                              <button onClick={async () => {
+                                try { await gerarRelatorio(nf.id) }
+                                catch { toast.error("Erro ao gerar relatório") }
+                              }}
+                                className="px-3 py-1 border border-orange-500/30 rounded-md bg-transparent hover:bg-orange-500/10 text-orange-400 transition-all">
+                                📄
+                              </button>
+                            )}
                           </div>
                         ))}
                       </div>

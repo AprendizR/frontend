@@ -3,6 +3,7 @@ import { registrarOcorrencia, listarOcorrenciasPorOS } from "../../api/ocorrenci
 import { uploadFoto, removerFoto, urlFoto } from "../../api/fotoApi"
 import type { NotaFiscalResumo } from "../../types/Carga"
 import type { SubtipoOcorrencia, Ocorrencia } from "../../types/Ocorrencias"
+import { gerarRelatorio } from "../../api/notaFiscalApi"
 import toast from "react-hot-toast"
 
 type Props = {
@@ -99,6 +100,15 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
         }
     }
 
+    async function handleRelatorio() {
+        try {
+            await gerarRelatorio(nota.id)
+        } catch {
+            toast.error("Erro ao gerar relatório")
+        }
+
+    }
+
     async function carregarOcorrencias() {
         if (ocorrencias.length > 0) { setExpandido(!expandido); return }
         setCarregandoOcorrencias(true)
@@ -164,6 +174,14 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                             : 'bg-transparent hover:bg-[#1e293b] border-[#334155] text-slate-300'}`}>
                         {carregandoOcorrencias ? "..." : expandido ? "▲ Ocultar" : "▼ Histórico"}
                     </button>
+
+                    {nota.entregue && (
+                        <button onClick={handleRelatorio}
+                            className="px-3 py-2 text-sm border border-orange-500/30 rounded-md bg-transparent hover:bg-orange-500/10 text-orange-400 transition-all">
+                            📄
+                        </button>
+                    )}
+                    
                 </div>
             </div>
 
