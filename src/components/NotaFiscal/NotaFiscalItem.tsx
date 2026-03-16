@@ -134,9 +134,16 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                     className={`w-6 h-6 accent-green-500 ${nota.entregue ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
 
                 <div className="flex-1 flex items-center gap-3 flex-wrap">
+                    {nota.ordemEntrega && (
+                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded text-xs font-bold">
+                            #{nota.ordemEntrega}
+                        </span>
+                    )}
                     <strong className="text-lg text-white">OS #{nota.ordemServico}</strong>
                     <span className="text-slate-600">|</span>
                     <span className="text-slate-400">NF: {nota.numero}</span>
+                    <span className="text-slate-400">Destino {nota.destinatario}</span>
+                    <strong className="text-lg text-white">Cidade: {nota.cidade}</strong>
 
                     {nota.entregue && (
                         carregandoUltima
@@ -181,7 +188,7 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                             📄
                         </button>
                     )}
-                    
+
                 </div>
             </div>
 

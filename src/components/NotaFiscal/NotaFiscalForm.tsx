@@ -18,7 +18,9 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
   const [valor, setValor] = useState("")
   const [volumes, setVolumes] = useState("")
   const [loading, setLoading] = useState(false)
-  const { cep, setCep, cidade, setCidade, endereco, setEndereco, erroCep, consultarCep, resetCep } = useCep()
+  const [coordenadas, setCoordenadas] = useState<{lat: number, lng: number} | null>(null)
+
+  const { cep, setCep, cidade, setCidade, endereco, setEndereco, erroCep, consultarCepManual, resetCep } = useCep()
 
   const inputClass = "w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
 
@@ -38,16 +40,21 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
         frete: frete ? parseFloat(frete) : undefined,
         valor: valor ? parseFloat(valor) : undefined,
         volumes: volumes ? parseInt(volumes) : undefined,
+        latitude: coordenadas?.lat,
+        longitude: coordenadas?.lng,
       })
 
       toast.success(`Nota cadastrada! OS: ${nota.ordemServico}`)
 
       setNumero("")
       setClienteId(undefined)
+      setClienteNome("")
+      setRemetente("")
       setDestinatario("")
       setFrete("")
       setValor("")
       setVolumes("")
+      setCoordenadas(null)
       resetCep()
       onCadastrado()
     } catch {
@@ -69,27 +76,41 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
 
         <div>
           <label className="block text-slate-400 text-sm mb-1">Cliente</label>
-          <ClienteAutocomplete value={clienteNome} onChange={v => { setClienteNome(v); setClienteId(undefined) }} onSelect={c => { setClienteId(c.id); setClienteNome(c.nome) }}
+          <ClienteAutocomplete value={clienteNome}
+            onChange={v => { setClienteNome(v); setClienteId(undefined) }}
+            onSelect={c => { setClienteId(c.id); setClienteNome(c.nome) }}
             className={inputClass} />
         </div>
 
         <div>
           <label className="block text-slate-400 text-sm mb-1">Remetente</label>
-          <ClienteAutocomplete value={remetente} onChange={setRemetente} onSelect={c => setRemetente(c.nome)} className={inputClass} />
+          <ClienteAutocomplete value={remetente} onChange={setRemetente}
+            onSelect={c => setRemetente(c.nome)}
+            className={inputClass} />
         </div>
 
         <div>
           <label className="block text-slate-400 text-sm mb-1">Destinatário</label>
-          <ClienteAutocomplete value={destinatario} onChange={setDestinatario} onSelect={c => {
-            setDestinatario(c.nome)
-            setCep(c.cep)
-            setCidade(c.cidade)
-            setEndereco(c.endereco)
-          }} className={inputClass} />
+          <ClienteAutocomplete value={destinatario} onChange={setDestinatario}
+            onSelect={async c => {
+              setDestinatario(c.nome)
+              setCep(c.cep)
+              setCidade(c.cidade)
+              setEndereco(c.endereco)
+              const coords = await consultarCepManual(c.cep)
+              if (coords) setCoordenadas(coords)
+            }}
+            className={inputClass} />
         </div>
+
         <div>
           <label className="block text-slate-400 text-sm mb-1">CEP</label>
-          <input value={cep} onChange={e => setCep(e.target.value)} onBlur={consultarCep} maxLength={8} className={inputClass} />
+          <input value={cep} onChange={e => setCep(e.target.value)}
+            onBlur={async () => {
+              const coords = await consultarCepManual(cep)
+              if (coords) setCoordenadas(coords)
+            }}
+            maxLength={8} className={inputClass} />
           {erroCep && <small className="text-red-400 mt-1 block">{erroCep}</small>}
         </div>
 

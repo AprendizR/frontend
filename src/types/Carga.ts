@@ -12,6 +12,7 @@ export interface NotaFiscalResumo {
   remetente: string
   entregue: boolean
   fotos: string[]
+  ordemEntrega?: number
 }
 
 export interface MotoristaResumo {

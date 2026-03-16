@@ -39,6 +39,8 @@ export type CriarNotaDTO = {
   frete?: number
   valor?: number
   volumes?: number
+  latitude?: number
+  longitude?: number
 }
 
 export type FiltrosNotasFiscais = {

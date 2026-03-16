@@ -92,3 +92,10 @@ export async function baixarRomaneio(id: number): Promise<void> {
   link.click()
   URL.revokeObjectURL(url)
 }
+
+export async function roteirizar(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/${id}/roteirizar`, {
+    method: "POST"
+  })
+  if (!response.ok) throw new Error("Erro ao roteirizar")
+}

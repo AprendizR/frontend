@@ -7,6 +7,7 @@ import { AdicionarNotasNaCarga } from "../Carga/AdicionarNotasNaCarga"
 import { MotoristaAutocomplete } from "../Motorista/MotoristaAutocomplete"
 import { VeiculoAutocomplete } from "../Veiculo/VeiculoAutocomplete"
 import { baixarRomaneio } from "../../api/cargaApi"
+import { roteirizar } from "../../api/cargaApi"
 import toast from "react-hot-toast"
 
 type Props = {
@@ -41,15 +42,16 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
   }
 
   async function recarregarDetalhes() {
-    if (!aberto) return
-    try {
-      const detalhada = await buscarCargaDetalhada(carga.id)
-      setCargaDetalhada(detalhada)
-      onAtualizar?.()
-    } catch {
-      toast.error("Erro ao atualizar detalhes")
-    }
+  if (!aberto) return
+  try {
+    const detalhada = await buscarCargaDetalhada(carga.id)
+    console.log("notas:", detalhada.notasFiscais.map(n => ({ os: n.ordemServico, ordem: n.ordemEntrega })))
+    setCargaDetalhada(detalhada)
+    onAtualizar?.()
+  } catch {
+    toast.error("Erro ao atualizar detalhes")
   }
+}
 
   async function excluirNota(notaId: number) {
     try {
@@ -92,6 +94,21 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
     }
   }
 
+  async function handleRoteirizar() {
+    try {
+      await roteirizar(carga.id)
+      toast.success("Rota otimizada!")
+      await recarregarDetalhes()
+      onAtualizar?.()
+    } catch {
+      toast.error("Erro ao roteirizar")
+    }
+  }
+  const notasOrdenadas = [...(cargaDetalhada?.notasFiscais ?? [])].sort((a, b) => {
+    if (a.ordemEntrega == null) return 1
+    if (b.ordemEntrega == null) return -1
+    return a.ordemEntrega - b.ordemEntrega
+  })
   const totalNotas = cargaDetalhada?.notasFiscais?.length || 0
   const notasEntregues = cargaDetalhada?.notasFiscais?.filter(n => n.entregue).length || 0
   const progresso = totalNotas > 0 ? (notasEntregues / totalNotas) * 100 : 0
@@ -118,6 +135,12 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
 
           <div className="flex items-center gap-3 ml-4" onClick={e => e.stopPropagation()}>
             <StatusBadge status={carga.statusCarga} />
+            <button
+              onClick={e => { e.stopPropagation(); handleRoteirizar() }}
+              className="px-3 py-1 border border-purple-500/30 rounded-md bg-transparent hover:bg-purple-500/10 text-purple-400 transition-all text-sm"
+            >
+              🗺️
+            </button>
             <button
               onClick={() => setEditando(!editando)}
               className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all text-sm"
@@ -223,8 +246,13 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {cargaDetalhada.notasFiscais.map(nota => (
-                <NotaFiscalItem key={nota.id} nota={nota} onAtualizar={recarregarDetalhes} onExcluir={() => excluirNota(nota.id)} />
+              {notasOrdenadas.map(nota => (
+                <NotaFiscalItem
+                  key={nota.id}
+                  nota={nota}
+                  onAtualizar={recarregarDetalhes}
+                  onExcluir={() => excluirNota(nota.id)}
+                />
               ))}
             </div>
           )}
