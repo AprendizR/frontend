@@ -10,7 +10,7 @@ type Props = {
 export function MotoristaForm({ onCadastrado }: Props) {
   const [nome, setNome] = useState("")
   const [cpf, setCpf] = useState("")
-  const [apelido, setAplido] = useState("")
+  const [apelido, setApelido] = useState("")
   const [telefone, setTelefone] = useState("")
   const [valorDiaria, setValorDiaria] = useState("")
   const [loading, setLoading] = useState(false)
@@ -44,6 +44,7 @@ export function MotoristaForm({ onCadastrado }: Props) {
 
       toast.success("Motorista cadastrado!")
       setNome("")
+      setApelido("")
       setCpf("")
       setTelefone("")
       setValorDiaria("")
@@ -73,7 +74,7 @@ export function MotoristaForm({ onCadastrado }: Props) {
         </div>
         <div>
           <label className="block text-slate-400 text-sm mb-1">Apelido (Opcional)</label>
-          <input value={apelido} onChange={e => setAplido(e.target.value)}
+          <input value={apelido} onChange={e => setApelido(e.target.value)}
             className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
         </div>
         <div>

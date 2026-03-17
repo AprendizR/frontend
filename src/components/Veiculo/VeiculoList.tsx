@@ -64,7 +64,7 @@ export function VeiculoList({ veiculos, onAtualizado }: Props) {
             {veiculos.map((v) => (
               <Fragment key={v.id}>
                 <tr key={v.id} className="border-b border-[#1e293b] hover:bg-[#1e293b] transition-colors">
-                  <td className="px-6 py-3 text-white font-medium">{v.placa}</td>
+                  <td className="px-6 py-3 text-slate-300 uppercase">{v.placa}</td>
                   <td className="px-6 py-3 text-slate-300 uppercase">{v.modelo}</td>
                   <td className="px-6 py-3 text-center">
                     <div className="flex justify-center gap-2">

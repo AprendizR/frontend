@@ -18,7 +18,7 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
   const [valor, setValor] = useState("")
   const [volumes, setVolumes] = useState("")
   const [loading, setLoading] = useState(false)
-  const [coordenadas, setCoordenadas] = useState<{lat: number, lng: number} | null>(null)
+  const [coordenadas, setCoordenadas] = useState<{ lat: number, lng: number } | null>(null)
 
   const { cep, setCep, cidade, setCidade, endereco, setEndereco, erroCep, consultarCepManual, resetCep } = useCep()
 
@@ -47,9 +47,6 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
       toast.success(`Nota cadastrada! OS: ${nota.ordemServico}`)
 
       setNumero("")
-      setClienteId(undefined)
-      setClienteNome("")
-      setRemetente("")
       setDestinatario("")
       setFrete("")
       setValor("")
@@ -93,11 +90,12 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
           <label className="block text-slate-400 text-sm mb-1">Destinatário</label>
           <ClienteAutocomplete value={destinatario} onChange={setDestinatario}
             onSelect={async c => {
+              const coords = await consultarCepManual(c.cep)
+
               setDestinatario(c.nome)
               setCep(c.cep)
               setCidade(c.cidade)
               setEndereco(c.endereco)
-              const coords = await consultarCepManual(c.cep)
               if (coords) setCoordenadas(coords)
             }}
             className={inputClass} />

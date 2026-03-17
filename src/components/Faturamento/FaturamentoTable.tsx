@@ -99,7 +99,7 @@ export function FaturamentoTable() {
           <div className="flex flex-col gap-3">
             {dados.map(d => (
               <div
-                key={d.clienteId} // ← chave correta agora
+                key={d.clienteId}
                 className="bg-[#0f172a] border border-[#1e293b] rounded-xl overflow-hidden"
               >
                 <div className="flex items-center justify-between px-6 py-4">
