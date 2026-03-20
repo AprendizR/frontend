@@ -42,16 +42,16 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
   }
 
   async function recarregarDetalhes() {
-  if (!aberto) return
-  try {
-    const detalhada = await buscarCargaDetalhada(carga.id)
-    console.log("notas:", detalhada.notasFiscais.map(n => ({ os: n.ordemServico, ordem: n.ordemEntrega })))
-    setCargaDetalhada(detalhada)
-    onAtualizar?.()
-  } catch {
-    toast.error("Erro ao atualizar detalhes")
+    if (!aberto) return
+    try {
+      const detalhada = await buscarCargaDetalhada(carga.id)
+      console.log("notas:", detalhada.notasFiscais.map(n => ({ os: n.ordemServico, ordem: n.ordemEntrega })))
+      setCargaDetalhada(detalhada)
+      onAtualizar?.()
+    } catch {
+      toast.error("Erro ao atualizar detalhes")
+    }
   }
-}
 
   async function excluirNota(notaId: number) {
     try {
@@ -136,29 +136,34 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
           <div className="flex items-center gap-3 ml-4" onClick={e => e.stopPropagation()}>
             <StatusBadge status={carga.statusCarga} />
             <button
+              title="ROTEIRIZAR"
               onClick={e => { e.stopPropagation(); handleRoteirizar() }}
-              className="px-3 py-1 border border-purple-500/30 rounded-md bg-transparent hover:bg-purple-500/10 text-purple-400 transition-all text-sm"
+              className="px-3 py-2 border border-purple-500/30 rounded-md bg-transparent hover:bg-purple-500/10 text-purple-400 transition-all text-xl"
             >
               🗺️
             </button>
             <button
+            title="GERAR RELATÓRIO EXCEL"
+              onClick={e => { e.stopPropagation(); handleBaixarRomaneio() }}
+              className="px-3 py-2 border border-green-500/30 rounded-md bg-transparent hover:bg-green-500/10 text-green-400 transition-all text-xl"
+            >
+              📊
+            </button>
+            <button
+            title="EDIÇÃO DE MOTORISTA, VEÍCULO E DIAS TRABALHADOS"
               onClick={() => setEditando(!editando)}
-              className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all text-sm"
+              className="px-3 py-2 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all text-xl"
             >
               ✏️
             </button>
             <button
+            title="EXCLUIR ROMANEIO"
               onClick={handleExcluirCarga}
-              className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all text-sm"
+              className="px-3 py-2 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all text-xl"
             >
               🗑️
             </button>
-            <button
-              onClick={e => { e.stopPropagation(); handleBaixarRomaneio() }}
-              className="px-3 py-1 border border-green-500/30 rounded-md bg-transparent hover:bg-green-500/10 text-green-400 transition-all text-sm"
-            >
-              📊
-            </button>
+
             <span className="text-slate-500 text-sm">{loading ? "..." : aberto ? "▲" : "▼"}</span>
           </div>
         </div>

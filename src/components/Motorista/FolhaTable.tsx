@@ -97,10 +97,10 @@ export function FolhaTable() {
                   <td className="px-6 py-3 text-center">
                     <div className="flex justify-center gap-2">
                       <button onClick={() => abrirEdicao(f)} className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all">
-                        ✏️
+                        ✏️ Editar
                       </button>
                       <button onClick={() => handleDeletar(f.motoristaId)} className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">
-                        🗑️
+                        🗑️ Excluir
                       </button>
                     </div>
                   </td>
