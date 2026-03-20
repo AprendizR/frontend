@@ -40,7 +40,7 @@ export async function listarVeiculos(): Promise<Veiculo[]> {
 }
 
 export async function deletarVeiculo(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}${id}`, {
+  const response = await fetch(`${API_BASE}/${id}`, {
     method: "DELETE"
   })
   if (!response.ok) throw new Error("Erro ao deletar o veiculo")

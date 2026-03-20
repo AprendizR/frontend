@@ -30,6 +30,7 @@ export type NotaFiscal = {
 
 export type CriarNotaDTO = {
   numero?: string
+  dataEmissao?: string
   clienteId?: number
   remetente: string
   destinatario?: string

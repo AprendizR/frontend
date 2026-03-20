@@ -10,6 +10,7 @@ type Props = {
 
 export function NotaFiscalForm({ onCadastrado }: Props) {
   const [numero, setNumero] = useState("")
+  const [dataEmissao, setDataEmissao] = useState("")
   const [clienteId, setClienteId] = useState<number | undefined>()
   const [clienteNome, setClienteNome] = useState("")
   const [remetente, setRemetente] = useState("")
@@ -29,8 +30,9 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
     setLoading(true)
 
     try {
-      const nota = await criarNotaFiscal({
+      const nota = await criarNotaFiscal({        
         numero,
+        dataEmissao: dataEmissao || undefined,
         clienteId,
         remetente,
         destinatario,
@@ -47,6 +49,7 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
       toast.success(`Nota cadastrada! OS: ${nota.ordemServico}`)
 
       setNumero("")
+      setDataEmissao("")
       setDestinatario("")
       setFrete("")
       setValor("")
@@ -123,8 +126,8 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
         </div>
 
         <div>
-          <label className="block text-slate-400 text-sm mb-1">Frete <span className="text-slate-600">(opcional)</span></label>
-          <input type="number" step="0.01" value={frete} onChange={e => setFrete(e.target.value)} className={inputClass} />
+          <label className="block text-slate-400 text-sm mb-1">Data de Emissao <span className="text-slate-600"></span></label>
+          <input type="date" value={dataEmissao} onChange={e => setDataEmissao(e.target.value)} className={inputClass} />
         </div>
 
         <div>

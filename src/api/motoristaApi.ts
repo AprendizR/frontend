@@ -47,15 +47,13 @@ export async function deletarMotorista(id: number): Promise<void> {
   if (!response.ok) throw new Error("Erro ao deletar Motorista")
 }
 
-export async function zerarDias(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/${id}/zerar-dias`, {
-    method: "PUT"
-  })
-  if (!response.ok) throw new Error("Erro ao zerar dias")
-}
+export async function buscarFolha(id: number, dataInicio?: string, dataFim?: string): Promise<FolhaMotorista> {
+  const params = new URLSearchParams()
+  if (dataInicio) params.append("dataInicio", dataInicio)
+  if (dataFim) params.append("dataFim", dataFim)
 
-export async function buscarFolha(id: number): Promise<FolhaMotorista> {
-  const response = await fetch(`${API_BASE}/${id}/folha`)
+  const query = params.toString() ? `?${params.toString()}` : ""
+  const response = await fetch(`${API_BASE}/${id}/folha${query}`)
   if (!response.ok) throw new Error("Erro ao buscar folha")
   return response.json()
 }

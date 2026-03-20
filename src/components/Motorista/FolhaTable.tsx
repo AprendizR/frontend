@@ -1,6 +1,6 @@
 import { useEffect, useState, Fragment } from "react"
 import type { FolhaMotorista, CriarMotoristaDTO } from "../../types/Motorista"
-import { buscarFolha, zerarDias, listarMotoristas, atualizarMotorista, deletarMotorista } from "../../api/motoristaApi"
+import { buscarFolha, listarMotoristas, atualizarMotorista, deletarMotorista } from "../../api/motoristaApi"
 import toast from "react-hot-toast"
 
 export function FolhaTable() {
@@ -8,14 +8,16 @@ export function FolhaTable() {
   const [editando, setEditando] = useState<number | null>(null)
   const [form, setForm] = useState<CriarMotoristaDTO>({ nome: "", apelido: "", cpf: "", telefone: "", valorDiaria: 0 })
   const [loading, setLoading] = useState(true)
+  const [dataInicio, setDataInicio] = useState("")
+  const [dataFim, setDataFim] = useState("")
 
   const inputClass = "w-full bg-[#0f172a] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-orange-500"
 
-  async function carregarFolhas() {
+  async function carregarFolhas(inicio?: string, fim?: string) {
     setLoading(true)
     try {
       const motoristas = await listarMotoristas()
-      const dados = await Promise.all(motoristas.map(m => buscarFolha(m.id)))
+      const dados = await Promise.all(motoristas.map(m => buscarFolha(m.id, inicio, fim)))
       const ordenado = dados.sort((a, b) => (b.diasComoMotorista + b.diasComoAjudante) - (a.diasComoMotorista + a.diasComoAjudante))
       setFolhas(ordenado)
     } catch {
@@ -26,17 +28,6 @@ export function FolhaTable() {
   }
 
   useEffect(() => { carregarFolhas() }, [])
-
-  async function handleZerarMes() {
-    if (!confirm("Deseja zerar os dias de todos os motoristas?")) return
-    try {
-      await Promise.all(folhas.map(f => zerarDias(f.motoristaId)))
-      toast.success("Mês zerado!")
-      carregarFolhas()
-    } catch {
-      toast.error("Erro ao zerar mês")
-    }
-  }
 
   function abrirEdicao(f: FolhaMotorista) {
     setEditando(f.motoristaId)
@@ -70,11 +61,30 @@ export function FolhaTable() {
 
   return (
     <div>
+      {/* Filtro de período */}
+      <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-4 mb-4 flex items-end gap-4">
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Data início</label>
+          <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)}
+            className="bg-[#1e293b] text-white border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        </div>
+        <div>
+          <label className="block text-slate-400 text-sm mb-1">Data fim</label>
+          <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)}
+            className="bg-[#1e293b] text-white border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500" />
+        </div>
+        <button onClick={() => carregarFolhas(dataInicio || undefined, dataFim || undefined)}
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors text-sm font-semibold">
+          Filtrar
+        </button>
+        <button onClick={() => { setDataInicio(""); setDataFim(""); carregarFolhas() }}
+          className="px-4 py-2 border border-[#334155] text-slate-300 hover:bg-[#1e293b] rounded-lg transition-colors text-sm">
+          Limpar
+        </button>
+      </div>
+
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-white">Resumo do Mês</h3>
-        <button onClick={handleZerarMes} className="px-4 py-2 text-sm border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors">
-          Zerar Mês
-        </button>
       </div>
 
       <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl overflow-hidden">
