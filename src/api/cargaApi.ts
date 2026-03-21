@@ -1,26 +1,23 @@
 import type { Carga, CargaResumo, CargaDetalhada, CriarCargaDTO, FiltrosCarga } from "../types/Carga"
 import type { PageResponse } from "../types/Page"
+import { authHeader } from "./http"
 
 const API_BASE = "http://localhost:8080/api/cargas"
 
 export async function criarCarga(dto: CriarCargaDTO): Promise<Carga> {
   const response = await fetch(API_BASE, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
-
-  if (!response.ok) {
-    throw new Error("Erro ao criar carga")
-  }
-
+  if (!response.ok) throw new Error("Erro ao criar carga")
   return response.json()
 }
 
 export async function atualizarCarga(id: number, dto: CriarCargaDTO): Promise<CargaResumo> {
   const response = await fetch(`${API_BASE}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
   if (!response.ok) throw new Error("Erro ao atualizar carga")
@@ -29,12 +26,10 @@ export async function atualizarCarga(id: number, dto: CriarCargaDTO): Promise<Ca
 
 export async function adicionarNotaNaCarga(cargaId: number, notaId: number): Promise<void> {
   const response = await fetch(`${API_BASE}/${cargaId}/notas/${notaId}`, {
-    method: "POST"
+    method: "POST",
+    headers: { ...authHeader() }
   })
-
-  if (!response.ok) {
-    throw new Error("Erro ao adicionar nota na carga")
-  }
+  if (!response.ok) throw new Error("Erro ao adicionar nota na carga")
 }
 
 export async function adicionarNotasNaCarga(cargaId: number, notasIds: number[]): Promise<void> {
@@ -45,23 +40,22 @@ export async function adicionarNotasNaCarga(cargaId: number, notasIds: number[])
 
 export async function excluirNotaDaCarga(cargaId: number, notaId: number): Promise<void> {
   const response = await fetch(`${API_BASE}/${cargaId}/notas/${notaId}`, {
-    method: "DELETE"
+    method: "DELETE",
+    headers: { ...authHeader() }
   })
-
-  if (!response.ok) {
-    throw new Error("Erro ao excluir nota da carga")
-  }
+  if (!response.ok) throw new Error("Erro ao excluir nota da carga")
 }
 
 export async function buscarCargaDetalhada(id: number): Promise<CargaDetalhada> {
-  const response = await fetch(`${API_BASE}/${id}`)
+  const response = await fetch(`${API_BASE}/${id}`, {
+    headers: { ...authHeader() }
+  })
   if (!response.ok) throw new Error("Erro ao buscar carga detalhada")
   return response.json()
 }
 
 export async function buscarCargas(filtros: FiltrosCarga = {}): Promise<PageResponse<CargaResumo>> {
   const params = new URLSearchParams()
-
   if (filtros.motoristaId) params.append("motoristaId", String(filtros.motoristaId))
   if (filtros.veiculoId) params.append("veiculoId", String(filtros.veiculoId))
   if (filtros.numeroCarga) params.append("numeroCarga", String(filtros.numeroCarga))
@@ -70,18 +64,25 @@ export async function buscarCargas(filtros: FiltrosCarga = {}): Promise<PageResp
   params.append("page", String(filtros.page ?? 0))
   params.append("size", String(filtros.size ?? 10))
 
-  const response = await fetch(`${API_BASE}?${params.toString()}`)
+  const response = await fetch(`${API_BASE}?${params.toString()}`, {
+    headers: { ...authHeader() }
+  })
   if (!response.ok) throw new Error("Erro ao buscar cargas")
   return response.json()
 }
 
 export async function excluirCarga(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/${id}`, { method: "DELETE" })
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: "DELETE",
+    headers: { ...authHeader() }
+  })
   if (!response.ok) throw new Error("Erro ao excluir carga")
 }
 
 export async function baixarRomaneio(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/${id}/romaneio`)
+  const response = await fetch(`${API_BASE}/${id}/romaneio`, {
+    headers: { ...authHeader() }
+  })
   if (!response.ok) throw new Error("Erro ao gerar romaneio")
 
   const blob = await response.blob()
@@ -95,7 +96,8 @@ export async function baixarRomaneio(id: number): Promise<void> {
 
 export async function roteirizar(id: number): Promise<void> {
   const response = await fetch(`${API_BASE}/${id}/roteirizar`, {
-    method: "POST"
+    method: "POST",
+    headers: { ...authHeader() }
   })
   if (!response.ok) throw new Error("Erro ao roteirizar")
 }

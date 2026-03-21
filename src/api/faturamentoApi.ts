@@ -1,4 +1,5 @@
 import type { FaturamentoCliente } from "../types/Faturamento"
+import { authHeader } from "./http"
 
 const API_BASE = "http://localhost:8080/api/faturamento"
 
@@ -7,7 +8,9 @@ export async function buscarFaturamento(dataInicio?: string, dataFim?: string): 
   if (dataInicio) params.append("dataInicio", dataInicio)
   if (dataFim) params.append("dataFim", dataFim)
 
-  const response = await fetch(`${API_BASE}?${params.toString()}`)
+  const response = await fetch(`${API_BASE}?${params.toString()}`, {
+    headers: { ...authHeader() }
+  })
   if (!response.ok) throw new Error("Erro ao buscar faturamento")
   return response.json()
 }

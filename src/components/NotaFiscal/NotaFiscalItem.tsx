@@ -168,12 +168,12 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                     )}
 
                     <button onClick={() => inputFotoRef.current?.click()} disabled={uploadandoFoto}
-                        className="px-3 py-2 text-sm border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
-                        {uploadandoFoto ? "..." : "📎"}
+                        className="px-3 py-2 border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
+                        {uploadandoFoto ? "..." : "📎 Anexar"}
                     </button>
 
                     <button type="button" onClick={onExcluir}
-                        className="px-3 py-2 text-sm border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">🗑️</button>
+                        className="px-3 py-2 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">🗑️ Excluir</button>
 
                     <button type="button" onClick={carregarOcorrencias} disabled={carregandoOcorrencias}
                         className={`px-4 py-2 text-sm border rounded-md font-medium transition-all ${expandido
@@ -184,8 +184,8 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
 
                     {nota.entregue && (
                         <button onClick={handleRelatorio}
-                            className="px-3 py-2 text-sm border border-orange-500/30 rounded-md bg-transparent hover:bg-orange-500/10 text-orange-400 transition-all">
-                            📄
+                            className="px-3 py-2 border border-orange-500/30 rounded-md bg-transparent hover:bg-orange-500/10 text-orange-400 transition-all">
+                            📄 Resumo
                         </button>
                     )}
 

@@ -1,11 +1,12 @@
 import type { Ocorrencia, CriarOcorrenciaDTO } from "../types/Ocorrencias"
+import { authHeader } from "./http"
 
 const API_BASE = "http://localhost:8080/api/ocorrencias"
 
 export async function registrarOcorrencia(dto: CriarOcorrenciaDTO): Promise<Ocorrencia> {
   const response = await fetch(API_BASE, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
   if (!response.ok) throw new Error("Erro ao registrar ocorrência")
@@ -13,7 +14,9 @@ export async function registrarOcorrencia(dto: CriarOcorrenciaDTO): Promise<Ocor
 }
 
 export async function listarOcorrenciasPorOS(ordemServico: number): Promise<Ocorrencia[]> {
-  const response = await fetch(`${API_BASE}/os/${ordemServico}`)
+  const response = await fetch(`${API_BASE}/os/${ordemServico}`, {
+    headers: { ...authHeader() }
+  })
   if (!response.ok) throw new Error("Erro ao buscar ocorrências")
   return response.json()
 }
