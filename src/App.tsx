@@ -20,6 +20,7 @@ export default function App() {
 
   function handleLogout() {
     localStorage.removeItem("token")
+    localStorage.removeItem("nomeUsuario")
     setAutenticado(false)
   }
 

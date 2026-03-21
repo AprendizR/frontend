@@ -12,6 +12,7 @@ export function DashboardPage() {
   const [senha, setSenha] = useState("")
   const [loading, setLoading] = useState(false)
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
+  const nomeLogado = localStorage.getItem("nomeUsuario")
 
   const inputClass = "w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
 
@@ -94,14 +95,16 @@ export function DashboardPage() {
           {usuarios.length === 0 ? (
             <p className="text-slate-500 text-sm">Nenhum usuário cadastrado</p>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 overflow-y-auto max-h-64">
               {usuarios.map(u => (
                 <div key={u.id} className="flex justify-between items-center px-4 py-2 bg-[#1e293b] rounded-lg">
-                  <span className="text-white">{u.nome}</span>
-                  <button onClick={() => handleDeletar(u.id, u.nome)}
+                  <span className="text-white uppercase">{u.nome}</span>
+                  {nomeLogado === "admin" && (
+                    <button onClick={() => handleDeletar(u.id, u.nome)}
                     className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">
                     🗑️ Excluir
-                  </button>
+                  </button>)}
+
                 </div>
               ))}
             </div>

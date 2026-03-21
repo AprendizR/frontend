@@ -10,6 +10,7 @@ export async function login(nome: string, senha: string): Promise<string> {
   if (!response.ok) throw new Error("Usuário ou senha incorretos")
 
   const data = await response.json()
+  localStorage.setItem("nomeUsuario", nome)
   return data.token
 }
 
