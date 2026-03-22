@@ -35,7 +35,7 @@ export function VeiculoList({ veiculos, onAtualizado }: Props) {
     if (!confirm("Deseja deletar este veiculo?")) return
     try {
       await deletarVeiculo(id)
-      toast.success("Cliente deletado")
+      toast.success("Veículo deletado")
       onAtualizado()
     } catch {
       toast.error("Erro ao excluir veiculo")
