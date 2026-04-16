@@ -1,6 +1,6 @@
 // FaturamentoTable.tsx
 import { useEffect, useState } from "react"
-import { buscarFaturamento } from "../../api/faturamentoApi"
+import { buscarFaturamento, baixarFaturamentoExcel } from "../../api/faturamentoApi"
 import type { FaturamentoCliente } from "../../types/Faturamento"
 import toast from "react-hot-toast"
 
@@ -50,7 +50,15 @@ export function FaturamentoTable() {
     })
   }
 
-  // Total geral de notas (todas as notas de todos os clientes)
+  async function handleExcel() {
+    try {
+      await baixarFaturamentoExcel(dataInicio || undefined, dataFim || undefined)
+      toast.success("Excel gerado!")
+    } catch {
+      toast.error("Erro ao gerar Excel")
+    }
+  }
+
   const totalGeral = dados.reduce((acc, d) => acc + d.totalNotas, 0)
 
   if (loading) return <div className="text-center py-12 text-slate-500">Carregando...</div>
@@ -72,6 +80,10 @@ export function FaturamentoTable() {
         <button onClick={handleFiltrar}
           className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors text-sm font-semibold">
           Filtrar
+        </button>
+        <button onClick={handleExcel}
+          className="px-4 py-2 border border-green-500/30 text-green-400 hover:bg-green-500/10 rounded-lg transition-colors text-sm font-semibold">
+          📊 Exportar Excel
         </button>
         <button onClick={handleLimpar}
           className="px-4 py-2 border border-[#334155] text-slate-300 hover:bg-[#1e293b] rounded-lg transition-colors text-sm">
