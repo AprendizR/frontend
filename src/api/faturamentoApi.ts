@@ -15,8 +15,9 @@ export async function buscarFaturamento(dataInicio?: string, dataFim?: string): 
   return response.json()
 }
 
-export async function baixarFaturamentoExcel(dataInicio?: string, dataFim?: string): Promise<void> {
+export async function baixarFaturamentoExcel(clienteId: number, dataInicio?: string, dataFim?: string): Promise<void> {
   const params = new URLSearchParams()
+  params.append("clienteId", String(clienteId))
   if (dataInicio) params.append("dataInicio", dataInicio)
   if (dataFim) params.append("dataFim", dataFim)
 

@@ -50,9 +50,9 @@ export function FaturamentoTable() {
     })
   }
 
-  async function handleExcel() {
+  async function handleExcel(clienteId: number) {
     try {
-      await baixarFaturamentoExcel(dataInicio || undefined, dataFim || undefined)
+      await baixarFaturamentoExcel(clienteId, dataInicio || undefined, dataFim || undefined)
       toast.success("Excel gerado!")
     } catch {
       toast.error("Erro ao gerar Excel")
@@ -80,10 +80,6 @@ export function FaturamentoTable() {
         <button onClick={handleFiltrar}
           className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors text-sm font-semibold">
           Filtrar
-        </button>
-        <button onClick={handleExcel}
-          className="px-4 py-2 border border-green-500/30 text-green-400 hover:bg-green-500/10 rounded-lg transition-colors text-sm font-semibold">
-          📊 Exportar Excel
         </button>
         <button onClick={handleLimpar}
           className="px-4 py-2 border border-[#334155] text-slate-300 hover:bg-[#1e293b] rounded-lg transition-colors text-sm">
@@ -120,8 +116,11 @@ export function FaturamentoTable() {
                     <span className="text-slate-400 text-sm ml-3">
                       {d.cidades.length} {d.cidades.length === 1 ? "cidade" : "cidades"}
                     </span>
-                  </div>
-
+                  </div>                  
+                  <button onClick={() => handleExcel(d.clienteId)}
+                    className="px-3 py-1.5 text-sm border border-green-500/30 rounded-lg text-green-400 hover:bg-green-500/10 transition-colors">
+                    📊
+                  </button>                  
                   <div className="flex items-center gap-4">
                     <div className="text-center">
                       <div className="text-orange-400 font-bold text-lg">{d.totalNotas}</div>
