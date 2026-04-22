@@ -25,6 +25,7 @@ export function Header({ onLogout }: Props) {
           <NavLink to="/veiculos">Veículos</NavLink>
           <NavLink to="/clientes">Clientes</NavLink>
           <NavLink to="/faturamento">Faturamento</NavLink>
+          <NavLink to="/portal/*">Portal do Cliente</NavLink>
         </nav>
 
         <button

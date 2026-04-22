@@ -10,6 +10,7 @@ import { ClientePage } from "./pages/ClientePage"
 import { Toaster } from "react-hot-toast"
 import { FaturamentoPage } from "./pages/FaturamentoPage"
 import { LoginPage } from "./pages/LoginPage"
+import { PortalApp } from "./pages/PortalApp"
 
 export default function App() {
   const [autenticado, setAutenticado] = useState(!!localStorage.getItem("token"))
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/veiculos" element={<VeiculosPage />} />
           <Route path="/clientes" element={<ClientePage />} />
           <Route path="/faturamento" element={<FaturamentoPage />} />
+          <Route path="/portal/*" element={<PortalApp />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
