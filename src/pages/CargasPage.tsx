@@ -57,7 +57,7 @@ export function CargasPage() {
   }
 
   return (
-    <div>
+    <div className="max-w-full">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-white mb-6">Gerenciamento de Cargas</h2>
         <span className="text-slate-400 text-sm">{totalElements} {totalElements === 1 ? "carga" : "cargas"}</span>

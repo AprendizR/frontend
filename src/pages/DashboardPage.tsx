@@ -56,7 +56,7 @@ export function DashboardPage() {
   }
 
   return (
-    <main className="px-6 py-8 space-y-8">
+    <main className="max-w-full">
       {/* Banner */}
       <section className="text-center py-12 bg-orange-600 rounded-xl">
         <div className="flex justify-center mb-4">

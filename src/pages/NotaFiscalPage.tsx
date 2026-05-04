@@ -42,8 +42,8 @@ export function NotaFiscalPage() {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className="max-w-full">
+      <div className="flex justify-between items-center mb-5">
         <h2 className="text-2xl font-bold text-white">Notas Fiscais Cadastradas</h2>
         <span className="text-slate-400 text-sm">{totalElements} {totalElements === 1 ? "nota" : "notas"}</span>
       </div>

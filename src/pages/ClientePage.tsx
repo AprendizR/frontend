@@ -23,7 +23,7 @@ export function ClientePage() {
     }, [])
 
     return (
-        <div>
+        <div className="max-w-full">
             <h2 className="text-2xl font-bold text-white mb-6">Clientes</h2>
             <ClienteForm onCadastrado={carregarClientes} />
             {erro && <p className="text-red-400 mt-2">{erro}</p>}

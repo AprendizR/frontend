@@ -26,7 +26,7 @@ export function PortalLoginPage({ onLogin }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] flex items-center justify-center">
+    <div className="max-w-full min-h-screen bg-[#0f172a] flex items-center justify-center">
       <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-8 w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="text-4xl mb-3">🚚</div>
