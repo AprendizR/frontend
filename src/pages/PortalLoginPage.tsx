@@ -36,7 +36,7 @@ export function PortalLoginPage({ onLogin }: Props) {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-slate-400 text-sm mb-1">CNPJ</label>
+            <label className="block text-slate-400 mb-1">CNPJ</label>
             <input
               value={cnpj}
               onChange={e => setCnpj(e.target.value)}
