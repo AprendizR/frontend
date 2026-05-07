@@ -53,32 +53,32 @@ export function PortalPage({ cnpj, nome, onLogout }: Props) {
           <span className="text-2xl">🚚</span>
           <div>
             <h1 className="text-white font-bold">OrtizLog</h1>
-            <p className="text-slate-400 text-xs">Portal do Cliente</p>
+            <p className="text-slate-400">Portal do Cliente</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-slate-300 text-sm">{nome}</span>
+          <span>{nome}</span>
           <button onClick={onLogout}
-            className="px-3 py-1.5 text-sm border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors">
+            className="px-3 py-1.5  border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors">
             Sair
           </button>
         </div>
       </header>
 
-      <main className="px-6 py-8 max-w-5xl mx-auto">
+      <main className="px-6 py-8 max-w-full mx-auto">
         {/* Busca e filtros */}
         <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-6 mb-6">
           <h2 className="text-white font-semibold mb-4">🔍 Buscar Notas</h2>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-slate-400 text-sm mb-1">Número da NF</label>
+              <label className="block text-slate-400  mb-1">Número da NF</label>
               <input value={numero} onChange={e => setNumero(e.target.value)}
                 placeholder="Ex: 12345"
                 onKeyDown={e => e.key === "Enter" && handleFiltrar()}
                 className={`w-full ${inputClass}`} />
             </div>
             <div>
-              <label className="block text-slate-400 text-sm mb-1">Status</label>
+              <label className="block text-slate-400  mb-1">Status</label>
               <select value={status} onChange={e => setStatus(e.target.value)}
                 className={`w-full ${inputClass}`}>
                 <option value="">Todos</option>
@@ -92,12 +92,12 @@ export function PortalPage({ cnpj, nome, onLogout }: Props) {
               </select>
             </div>
             <div>
-              <label className="block text-slate-400 text-sm mb-1">Data início</label>
+              <label className="block text-slate-400  mb-1">Data início</label>
               <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)}
                 className={`w-full ${inputClass}`} />
             </div>
             <div>
-              <label className="block text-slate-400 text-sm mb-1">Data fim</label>
+              <label className="block text-slate-400  mb-1">Data fim</label>
               <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)}
                 className={`w-full ${inputClass}`} />
             </div>
@@ -135,12 +135,12 @@ export function PortalPage({ cnpj, nome, onLogout }: Props) {
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-white font-bold">NF: {nota.numero || "—"}</span>
                         <span className="text-slate-500">|</span>
-                        <span className="text-slate-400 text-sm">OS #{nota.ordemServico}</span>
+                        <span className="text-slate-400 ">OS #{nota.ordemServico}</span>
                         <span className={`px-2 py-0.5 rounded text-xs font-bold ${getStatusColor(nota.status)}`}>
                           {formatStatus(nota.status)}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-sm text-slate-400">
+                      <div className="grid grid-cols-2 gap-2 text-slate-400">
                         <span><strong className="text-slate-300">Destinatário:</strong> {nota.destinatario || "—"}</span>
                         <span><strong className="text-slate-300">Cidade:</strong> {nota.cidade || "—"}</span>
                         {nota.motorista && (
