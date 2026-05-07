@@ -47,7 +47,6 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
       const detalhada = await buscarCargaDetalhada(carga.id)
       console.log("notas:", detalhada.notasFiscais.map(n => ({ os: n.ordemServico, ordem: n.ordemEntrega })))
       setCargaDetalhada(detalhada)
-      onAtualizar?.()
     } catch {
       toast.error("Erro ao atualizar detalhes")
     }

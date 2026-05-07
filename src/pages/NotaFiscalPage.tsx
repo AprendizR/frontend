@@ -6,17 +6,16 @@ import { NotaFiscalList } from "../components/NotaFiscal/NotaFiscalList"
 import toast from "react-hot-toast"
 import { ClienteAutocomplete } from "../components/Cliente/ClienteAutocomplete"
 
-
 export function NotaFiscalPage() {
   const [notaFiscal, setNotaFiscal] = useState<NotaFiscal[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
   const [filtros, setFiltros] = useState<FiltrosNotasFiscais>({ page: 0, size: 10 })
+  const [filtroAberto, setFiltroAberto] = useState(false)
 
   async function carregarNotas(f: FiltrosNotasFiscais = filtros) {
     try {
       const dados = await buscarNotasFiscais(f)
-      console.log(dados)
       setNotaFiscal(dados.content)
       setTotalPages(dados.page.totalPages)
       setTotalElements(dados.page.totalElements)
@@ -25,9 +24,7 @@ export function NotaFiscalPage() {
     }
   }
 
-  useEffect(() => {
-    carregarNotas()
-  }, [])
+  useEffect(() => { carregarNotas() }, [])
 
   function handleFiltroChange(novosFiltros: Partial<FiltrosNotasFiscais>) {
     const atualizado = { ...filtros, ...novosFiltros, page: 0 }
@@ -42,17 +39,32 @@ export function NotaFiscalPage() {
   }
 
   return (
-    <div>
+    <div className="px-6 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white">Notas Fiscais Cadastradas</h2>
+        <h2 className="text-2xl font-bold text-white">Notas Fiscais</h2>
         <span className="text-slate-400 text-sm">{totalElements} {totalElements === 1 ? "nota" : "notas"}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-6 items-stretch">
-        {/* Filtros */}
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-4 grid grid-cols-2 gap-4">
-          <h3 className="text-lg font-semibold text-white col-span-2">Filtros</h3>
+      {/* Form de cadastro — ocupa toda a largura */}
+      <div className="mb-4">
+        <NotaFiscalForm onCadastrado={() => carregarNotas()} />
+      </div>
 
+      {/* Botão para abrir/fechar filtros */}
+      <button
+        onClick={() => setFiltroAberto(a => !a)}
+        className={`w-full mb-4 px-4 py-2 border rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${
+          filtroAberto
+            ? "bg-orange-500/10 border-orange-500/30 text-orange-400"
+            : "bg-[#1e293b] border-[#334155] text-slate-300 hover:border-orange-500/30"
+        }`}
+      >
+        🔍 {filtroAberto ? "▲ Ocultar Filtros" : "▼ Mostrar Filtros"}
+      </button>
+
+      {/* Filtros recolhíveis */}
+      {filtroAberto && (
+        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-4 mb-6 grid grid-cols-2 gap-4">
           <div>
             <label className="block text-slate-400 text-sm mb-1">Número da NF</label>
             <input type="number" className="w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
@@ -67,13 +79,13 @@ export function NotaFiscalPage() {
 
           <div className="col-span-2">
             <label className="block text-slate-400 text-sm mb-1">Remetente</label>
-            <ClienteAutocomplete value={filtros.remetente ?? ""} onChange={valor => handleFiltroChange({ remetente: valor || undefined })} onSelect={() => { }}
+            <ClienteAutocomplete value={filtros.remetente ?? ""} onChange={valor => handleFiltroChange({ remetente: valor || undefined })} onSelect={() => {}}
               className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
           </div>
 
           <div className="col-span-2">
             <label className="block text-slate-400 text-sm mb-1">Destinatário</label>
-            <ClienteAutocomplete value={filtros.destinatario ?? ""} onChange={valor => handleFiltroChange({ destinatario: valor || undefined })} onSelect={() => { }}
+            <ClienteAutocomplete value={filtros.destinatario ?? ""} onChange={valor => handleFiltroChange({ destinatario: valor || undefined })} onSelect={() => {}}
               className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
           </div>
 
@@ -89,32 +101,17 @@ export function NotaFiscalPage() {
               onChange={e => handleFiltroChange({ dataFim: e.target.value || undefined })} />
           </div>
         </div>
-
-        {/* Cadastro */}
-        <NotaFiscalForm onCadastrado={() => carregarNotas()} />
-      </div>
+      )}
 
       <NotaFiscalList notaFiscal={notaFiscal} onAtualizado={() => carregarNotas()} />
 
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6">
-          <button
-            onClick={() => handlePagina((filtros.page ?? 0) - 1)}
-            disabled={(filtros.page ?? 0) === 0}
-            className="px-4 py-2 bg-[#1e293b] text-white rounded-lg border border-[#334155] disabled:opacity-40 hover:border-orange-500 transition-colors"
-          >
-            ←
-          </button>
-          <span className="text-slate-400 text-sm">
-            Página {(filtros.page ?? 0) + 1} de {totalPages}
-          </span>
-          <button
-            onClick={() => handlePagina((filtros.page ?? 0) + 1)}
-            disabled={(filtros.page ?? 0) + 1 >= totalPages}
-            className="px-4 py-2 bg-[#1e293b] text-white rounded-lg border border-[#334155] disabled:opacity-40 hover:border-orange-500 transition-colors"
-          >
-            →
-          </button>
+          <button onClick={() => handlePagina((filtros.page ?? 0) - 1)} disabled={(filtros.page ?? 0) === 0}
+            className="px-4 py-2 bg-[#1e293b] text-white rounded-lg border border-[#334155] disabled:opacity-40 hover:border-orange-500 transition-colors">←</button>
+          <span className="text-slate-400 text-sm">Página {(filtros.page ?? 0) + 1} de {totalPages}</span>
+          <button onClick={() => handlePagina((filtros.page ?? 0) + 1)} disabled={(filtros.page ?? 0) + 1 >= totalPages}
+            className="px-4 py-2 bg-[#1e293b] text-white rounded-lg border border-[#334155] disabled:opacity-40 hover:border-orange-500 transition-colors">→</button>
         </div>
       )}
     </div>
