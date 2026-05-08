@@ -27,7 +27,7 @@ export function LoginPage({ onLogin }: Props) {
   }
 
   return (
-    <div className="max-w-full">
+    <div className="max-w-full min-h-screen bg-[#0f172a] flex items-center justify-center">
       <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-8 w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white">OrtizLog</h1>

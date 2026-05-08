@@ -83,8 +83,7 @@ export function PortalPage({ cnpj, nome, onLogout }: Props) {
                 className={`w-full ${inputClass}`}>
                 <option value="">Todos</option>
                 <option value="ENTREGUE">Entregue</option>
-                <option value="EM_ROTA">Em Rota</option>
-                <option value="CENTRO_DISTRIBUICAO">Centro de Distribuição</option>
+                <option value="PENDENTE">Pendente</option>
                 <option value="COLETA">Coleta</option>
                 <option value="TROCA">Troca</option>
                 <option value="DEVOLVIDO">Devolvido</option>
