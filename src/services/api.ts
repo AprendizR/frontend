@@ -1,11 +1,30 @@
 const API_URL = 'http://localhost:8080/api'
 
-export async function apiGet<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${API_URL}${endpoint}`)
+export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const token = sessionStorage.getItem('token');
 
-  if (!response.ok) {
-    throw new Error('Erro na requisição')
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+  };
+
+  const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+
+  if (response.status === 401) {
+    sessionStorage.removeItem('token'); 
+    window.location.href = '/login';  
+    throw new Error('Sessão expirada. Redirecionando...');
   }
 
-  return response.json()
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Erro na requisição');
+  }
+
+  return response.json();
+}
+
+export async function apiGet<T>(endpoint: string): Promise<T> {
+  return apiRequest<T>(endpoint, { method: 'GET' });
 }

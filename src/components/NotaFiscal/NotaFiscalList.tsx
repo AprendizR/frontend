@@ -13,6 +13,7 @@ type EditarNota = {
   endereco: string
   valor: string
   volumes: string
+  frete: string
 }
 
 type Props = {
@@ -22,7 +23,7 @@ type Props = {
 
 export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
   const [editando, setEditando] = useState<NotaFiscal | null>(null)
-  const [form, setForm] = useState<EditarNota>({ numero: "", remetente: "", destinatario: "", cidade: "", endereco: "", valor: "", volumes: "" })
+  const [form, setForm] = useState<EditarNota>({ numero: "", remetente: "", destinatario: "", cidade: "", endereco: "", valor: "", volumes: "", frete:"" })
   const [verFoto, setVerFoto] = useState<number | null>(null)
   const [uploadando, setUploadando] = useState<number | null>(null)
   const inputRefs = useRef<Record<number, HTMLInputElement | null>>({})
@@ -36,7 +37,8 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
       cidade: n.cidade ?? "",
       endereco: n.endereco ?? "",
       valor: n.valor !== undefined ? String(n.valor) : "",
-      volumes: n.volumes ? String(n.volumes) : ""
+      volumes: n.volumes ? String(n.volumes) : "",
+      frete: n.frete ? String(n.frete) : ""
     })
   }
 
@@ -202,13 +204,47 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
                   <tr className="border-b border-blue-500/30 bg-[#1e293b]">
                     <td colSpan={9} className="px-6 py-4">
                       <div className="grid grid-cols-3 gap-3 mb-3">
-                        <input placeholder="Número" value={form.numero} onChange={e => setForm({ ...form, numero: e.target.value })} className={inputClass} />
-                        <input placeholder="Remetente" value={form.remetente} onChange={e => setForm({ ...form, remetente: e.target.value })} className={inputClass} />
-                        <input placeholder="Destinatário" value={form.destinatario} onChange={e => setForm({ ...form, destinatario: e.target.value })} className={inputClass} />
-                        <input placeholder="Cidade" value={form.cidade} onChange={e => setForm({ ...form, cidade: e.target.value })} className={inputClass} />
-                        <input placeholder="Endereço" value={form.endereco} onChange={e => setForm({ ...form, endereco: e.target.value })} className={inputClass} />
-                        <input type="number" step="0.01" placeholder="Valor" value={form.valor} onChange={e => setForm({ ...form, valor: e.target.value })} className={inputClass} />
-                        <input placeholder="Volumes" value={form.volumes} onChange={e => setForm({ ...form, volumes: e.target.value })} className={inputClass} />
+                        <div>
+                          <label htmlFor="numero" className="block text-slate-400 text-sm mb-1">Número</label>
+                          <input id="numero" placeholder="Número" value={form.numero} onChange={e => setForm({ ...form, numero: e.target.value })} className={inputClass} />
+                        </div>
+
+                        <div>
+                          <label htmlFor="remetente" className="block text-slate-400 text-sm mb-1">Remetente</label>
+                          <input id="remetente" placeholder="Remetente" value={form.remetente} onChange={e => setForm({ ...form, remetente: e.target.value })} className={inputClass} />
+                        </div>
+
+                        <div>
+                          <label htmlFor="destinatario" className="block text-slate-400 text-sm mb-1">Destinatário</label>
+                          <input id="destinatario" placeholder="Destinatário" value={form.destinatario} onChange={e => setForm({ ...form, destinatario: e.target.value })} className={inputClass} />
+                        </div>
+
+                        <div>
+                          <label htmlFor="cidade" className="block text-slate-400 text-sm mb-1">Cidade</label>
+                          <input id="cidade" placeholder="Cidade" value={form.cidade} onChange={e => setForm({ ...form, cidade: e.target.value })} className={inputClass} />
+                        </div>
+
+                        <div>
+                          <label htmlFor="endereco" className="block text-slate-400 text-sm mb-1">Endereço</label>
+                          <input id="endereco" placeholder="Endereço" value={form.endereco} onChange={e => setForm({ ...form, endereco: e.target.value })} className={inputClass} />
+                        </div>
+
+                        <div>
+                          <label htmlFor="valor" className="block text-slate-400 text-sm mb-1">Valor</label>
+                          <input id="valor" type="number" step="0.01" placeholder="Valor" value={form.valor} onChange={e => setForm({ ...form, valor: e.target.value })} className={inputClass} />
+                        </div>
+
+                        <div>
+                          <label htmlFor="volumes" className="block text-slate-400 text-sm mb-1"> Volumes </label>
+                          <input id="volumes" placeholder="Volumes" value={form.volumes} onChange={e => setForm({ ...form, volumes: e.target.value })} className={inputClass} />
+                        </div>
+
+                        <div>
+                          <label htmlFor="Frete" className="block text-slate-400 text-sm mb-1">
+                            Frete <span className="text-slate-600"></span>
+                          </label>
+                          <input id="Frete" placeholder="Frete" value={form.frete} onChange={e => setForm({ ...form, volumes: e.target.value })} className={inputClass} />
+                        </div>
                       </div>
                       <div className="flex gap-2 justify-end">
                         <button onClick={() => setEditando(null)} className="px-4 py-1.5 text-sm border border-[#334155] rounded-lg text-slate-300 hover:bg-[#0f172a] transition-colors">
