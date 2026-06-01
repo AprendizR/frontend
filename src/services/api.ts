@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:8080/api'
 
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = sessionStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
   const headers = {
     'Content-Type': 'application/json',
@@ -12,8 +12,9 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
   const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
 
   if (response.status === 401) {
-    sessionStorage.removeItem('token'); 
-    window.location.href = '/login';  
+    localStorage.removeItem('token');
+    localStorage.removeItem('nomeUsuario');
+    window.location.href = '/';  
     throw new Error('Sessão expirada. Redirecionando...');
   }
 

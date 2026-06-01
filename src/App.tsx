@@ -25,30 +25,33 @@ export default function App() {
     setAutenticado(false)
   }
 
-  if (!autenticado) {
-    return (
-      <>
-        <Toaster position="top-center" />
-        <LoginPage onLogin={handleLogin} />
-      </>
-    )
-  }
-
   return (
     <BrowserRouter>
       <Toaster position="top-center" />
-      <Header onLogout={handleLogout} />
+      
+      {/* O Header só aparece se o usuário estiver de fato autenticado */}
+      {autenticado && <Header onLogout={handleLogout} />}
+      
       <main className="container">
         <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/cargas" element={<CargasPage />} />
-          <Route path="/notas-fiscais" element={<NotaFiscalPage />} />
-          <Route path="/motoristas" element={<MotoristasPage />} />
-          <Route path="/veiculos" element={<VeiculosPage />} />
-          <Route path="/clientes" element={<ClientePage />} />
-          <Route path="/faturamento" element={<FaturamentoPage />} />
-          <Route path="/portal/*" element={<PortalApp />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* Rota pública de Login */}
+          <Route 
+            path="/login" 
+            element={!autenticado ? <LoginPage onLogin={handleLogin} /> : <Navigate to="/inicio" replace />} 
+          />
+
+          {/* Rotas Privadas (Se não estiver autenticado, joga pro /login) */}
+          <Route path="/" element={<Navigate to="/inicio" replace />} />
+          <Route path="/inicio" element={autenticado ? <DashboardPage /> : <Navigate to="/login" replace />} />
+          <Route path="/cargas" element={autenticado ? <CargasPage /> : <Navigate to="/login" replace />} />
+          <Route path="/notas-fiscais" element={autenticado ? <NotaFiscalPage /> : <Navigate to="/login" replace />} />
+          <Route path="/motoristas" element={autenticado ? <MotoristasPage /> : <Navigate to="/login" replace />} />
+          <Route path="/veiculos" element={autenticado ? <VeiculosPage /> : <Navigate to="/login" replace />} />
+          <Route path="/clientes" element={autenticado ? <ClientePage /> : <Navigate to="/login" replace />} />
+          <Route path="/faturamento" element={autenticado ? <FaturamentoPage /> : <Navigate to="/login" replace />} />
+          <Route path="/portal/*" element={autenticado ? <PortalApp /> : <Navigate to="/login" replace />} />
+          
+          <Route path="*" element={<Navigate to="/inicio" replace />} />
         </Routes>
       </main>
     </BrowserRouter>

@@ -18,14 +18,14 @@ export function Header({ onLogout }: Props) {
         </div>
 
         <nav className="nav">
-          <NavLink to="/" end>Início</NavLink>
+          <NavLink to="/inicio" end>Início</NavLink>
           <NavLink to="/cargas">Cargas</NavLink>
           <NavLink to="/notas-fiscais">Notas Fiscais</NavLink>
           <NavLink to="/motoristas">Motoristas</NavLink>
           <NavLink to="/veiculos">Veículos</NavLink>
           <NavLink to="/clientes">Clientes</NavLink>
           <NavLink to="/faturamento">Faturamento</NavLink>
-          <NavLink to="/portal/*">Portal do Cliente</NavLink>
+          <NavLink to="/portal">Portal do Cliente</NavLink>
         </nav>
 
         <button
