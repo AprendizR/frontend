@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Fragment } from "react"
 import type { Cliente } from "../../types/Cliente"
 import type { CriarClienteDTO } from "../../types/Cliente"
+import { FreteClienteForm } from "./FreteClienteForm"
 import { formatCNPJ } from "../../utils/format"
 import { atualizarCliente, deletarCliente } from "../../api/clienteApi"
 import toast from "react-hot-toast"
@@ -100,6 +101,7 @@ export function ClienteList({ cliente, onAtualizado }: Props) {
                           Salvar
                         </button>
                       </div>
+                      <FreteClienteForm clienteId={c.id} clienteNome={c.nome}/>
                     </td>
                   </tr>
                 )}
