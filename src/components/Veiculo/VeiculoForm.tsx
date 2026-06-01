@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { criarVeiculo } from "../../api/veiculoApi"
+import toast, { getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
   onCadastrado: () => void
@@ -8,23 +9,19 @@ type Props = {
 export function VeiculoForm({ onCadastrado }: Props) {
   const [placa, setPlaca] = useState("")
   const [modelo, setModelo] = useState("")
-  const [sucesso, setSucesso] = useState("")
-  const [erro, setErro] = useState("")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setErro("")
-    setSucesso("")
 
     try {
       await criarVeiculo({ placa, modelo })
 
       setPlaca("")
       setModelo("")
-      setSucesso("Veiculo cadastrado com sucesso!")
+      toast.success("Veículo cadastrado com sucesso!")
       onCadastrado()
-    } catch {
-      setErro("Erro ao cadastrar veiculo")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao cadastrar veículo"))
     }
   }
 
@@ -49,8 +46,6 @@ export function VeiculoForm({ onCadastrado }: Props) {
         Cadastrar
       </button>
 
-      {sucesso && <p className="text-green-400 mt-3 text-sm">{sucesso}</p>}
-      {erro && <p className="text-red-400 mt-3 text-sm">{erro}</p>}
     </form>
   )
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { registrar, listarUsuarios, deletarUsuario } from "../api/authApi"
 import toast from "react-hot-toast"
+import { confirmAction } from "../utils/sweetAlertToast"
 
 interface Usuario {
   id: number
@@ -45,7 +46,12 @@ export function DashboardPage() {
   }
 
   async function handleDeletar(id: number, nomeUsuario: string) {
-    if (!confirm(`Deseja excluir o usuário ${nomeUsuario}?`)) return
+    const confirmou = await confirmAction({
+      title: "Excluir usuário?",
+      text: `O usuário ${nomeUsuario} será removido do sistema.`,
+      confirmButtonText: "Excluir",
+    })
+    if (!confirmou) return
     try {
       await deletarUsuario(id)
       toast.success("Usuário excluído!")

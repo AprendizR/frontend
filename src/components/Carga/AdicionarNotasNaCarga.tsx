@@ -3,6 +3,7 @@ import { listarNotasDisponiveis } from "../../api/notaFiscalApi"
 import { adicionarNotasNaCarga } from "../../api/cargaApi"
 import type { NotaFiscal } from "../../types/NotaFiscal"
 import toast from "react-hot-toast"
+import { getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
   cargaId: number
@@ -26,8 +27,8 @@ export function AdicionarNotasNaCarga({ cargaId, onAdicionadas }: Props) {
     try {
       const notas = await listarNotasDisponiveis()
       setNotasDisponiveis(notas)
-    } catch {
-      toast.error("Erro ao carregar notas disponíveis")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao carregar notas disponíveis"))
     } finally {
       setLoading(false)
     }
@@ -50,12 +51,12 @@ export function AdicionarNotasNaCarga({ cargaId, onAdicionadas }: Props) {
     setAdicionando(true)
     try {
       await adicionarNotasNaCarga(cargaId, notasSelecionadas)
-      toast.success(`✅ ${notasSelecionadas.length} nota(s) adicionada(s)!`)
+      toast.success(`${notasSelecionadas.length} nota(s) adicionada(s)!`)
       setNotasSelecionadas([])
       setExpandido(false)
       onAdicionadas()
-    } catch {
-      toast.error("Erro ao adicionar notas")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao adicionar notas"))
     } finally {
       setAdicionando(false)
     }

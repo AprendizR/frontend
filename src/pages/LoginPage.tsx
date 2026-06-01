@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { login } from "../api/authApi"
 import toast from "react-hot-toast"
+import { getErrorMessage } from "../utils/sweetAlertToast"
 
 type Props = {
   onLogin: () => void
@@ -19,8 +20,8 @@ export function LoginPage({ onLogin }: Props) {
       localStorage.setItem("token", token)
       toast.success("Bem-vindo!")
       onLogin()
-    } catch {
-      toast.error("Usuário ou senha incorretos")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Usuário ou senha incorretos"))
     } finally {
       setLoading(false)
     }

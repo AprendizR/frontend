@@ -6,6 +6,7 @@ import { FreteClienteForm } from "./FreteClienteForm"
 import { formatCNPJ } from "../../utils/format"
 import { atualizarCliente, deletarCliente } from "../../api/clienteApi"
 import toast from "react-hot-toast"
+import { confirmAction, getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
   cliente: Cliente[]
@@ -28,19 +29,24 @@ export function ClienteList({ cliente, onAtualizado }: Props) {
       toast.success("Cliente atualizado!")
       setEditando(null)
       onAtualizado()
-    } catch {
-      toast.error("Erro ao atualizar cliente")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao atualizar cliente"))
     }
   }
 
   async function handleDeletar(id: number) {
-    if (!confirm("Deseja excluir este cliente?")) return
+    const confirmou = await confirmAction({
+      title: "Excluir cliente?",
+      text: "Esta ação removerá o cliente do cadastro.",
+      confirmButtonText: "Excluir",
+    })
+    if (!confirmou) return
     try {
       await deletarCliente(id)
       toast.success("Cliente excluído!")
       onAtualizado()
-    } catch {
-      toast.error("Erro ao excluir cliente")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao excluir cliente"))
     }
   }
 

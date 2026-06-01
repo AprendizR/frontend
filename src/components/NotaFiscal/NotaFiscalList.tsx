@@ -4,6 +4,8 @@ import { atualizarNota, deletarNota } from "../../api/notaFiscalApi"
 import { uploadFoto, removerFoto, urlFoto } from "../../api/fotoApi"
 import { gerarRelatorio } from "../../api/notaFiscalApi"
 import toast from "react-hot-toast"
+import { confirmAction, getErrorMessage } from "../../utils/sweetAlertToast"
+import { currencyInputToNumber, formatCurrencyBRL, formatCurrencyInput } from "../../utils/format"
 
 type EditarNota = {
   numero: string
@@ -36,9 +38,9 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
       destinatario: n.destinatario ?? "",
       cidade: n.cidade ?? "",
       endereco: n.endereco ?? "",
-      valor: n.valor !== undefined ? String(n.valor) : "",
+      valor: n.valor !== undefined ? formatCurrencyInput(n.valor) : "",
       volumes: n.volumes ? String(n.volumes) : "",
-      frete: n.frete ? String(n.frete) : ""
+      frete: n.frete ? formatCurrencyInput(n.frete) : ""
     })
   }
 
@@ -52,25 +54,31 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
         cep: editando.cep ?? "",
         cidade: form.cidade,
         endereco: form.endereco,
-        valor: form.valor ? parseFloat(form.valor) : undefined,
+        frete: form.frete ? currencyInputToNumber(form.frete) : undefined,
+        valor: form.valor ? currencyInputToNumber(form.valor) : undefined,
         volumes: form.volumes ? parseInt(form.volumes) : undefined
       })
       toast.success("Nota atualizada!")
       setEditando(null)
       onAtualizado()
-    } catch {
-      toast.error("Erro ao atualizar nota")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao atualizar nota"))
     }
   }
 
   async function handleDeletar(id: number) {
-    if (!confirm("Deseja excluir esta nota?")) return
+    const confirmou = await confirmAction({
+      title: "Excluir nota fiscal?",
+      text: "Esta ação tentará remover a nota fiscal selecionada.",
+      confirmButtonText: "Excluir",
+    })
+    if (!confirmou) return
     try {
       await deletarNota(id)
       toast.success("Nota excluída!")
       onAtualizado()
-    } catch {
-      toast.error("Erro ao excluir nota")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao excluir nota"))
     }
   }
 
@@ -82,8 +90,8 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
       await uploadFoto(nf.id, arquivo)
       toast.success("Foto anexada!")
       onAtualizado()
-    } catch {
-      toast.error("Erro ao anexar foto")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao anexar foto"))
     } finally {
       setUploadando(null)
       if (inputRefs.current[nf.id]) inputRefs.current[nf.id]!.value = ""
@@ -91,14 +99,19 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
   }
 
   async function handleRemoverFoto(notaId: number, caminho: string) {
-    if (!confirm("Deseja remover esta foto?")) return
+    const confirmou = await confirmAction({
+      title: "Remover foto?",
+      text: "O comprovante selecionado será removido da nota.",
+      confirmButtonText: "Remover",
+    })
+    if (!confirmou) return
     try {
       await removerFoto(notaId, caminho)
       toast.success("Foto removida!")
       setVerFoto(null)
       onAtualizado()
-    } catch {
-      toast.error("Erro ao remover foto")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao remover foto"))
     }
   }
 
@@ -135,7 +148,7 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
                   <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.destinatario}>{nf.destinatario}</td>
                   <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.cidade}>{nf.cidade}</td>
                   <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.remetente}>{nf.remetente}</td>
-                  <td className="px-6 py-3 text-slate-300">{nf.valor}</td>
+                  <td className="px-6 py-3 text-slate-300">{formatCurrencyBRL(nf.valor)}</td>
                   <td className="px-6 py-3 text-center">
                     <span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(nf.status)}`}>{nf.status}</span>
                   </td>
@@ -186,7 +199,7 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
                             {nf.status === "ENTREGUE" && (
                               <button onClick={async () => {
                                 try { await gerarRelatorio(nf.id) }
-                                catch { toast.error("Erro ao gerar relatório") }
+                                catch (error) { toast.error(getErrorMessage(error, "Erro ao gerar relatório")) }
                               }}
                                 className="px-3 py-1 border border-orange-500/30 rounded-md bg-transparent hover:bg-orange-500/10 text-orange-400 transition-all">
                                 📄
@@ -231,7 +244,7 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
 
                         <div>
                           <label htmlFor="valor" className="block text-slate-400 text-sm mb-1">Valor</label>
-                          <input id="valor" type="number" step="0.01" placeholder="Valor" value={form.valor} onChange={e => setForm({ ...form, valor: e.target.value })} className={inputClass} />
+                          <input id="valor" inputMode="numeric" placeholder="Valor" value={form.valor} onChange={e => setForm({ ...form, valor: formatCurrencyInput(e.target.value) })} className={inputClass} />
                         </div>
 
                         <div>
@@ -243,7 +256,7 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
                           <label htmlFor="Frete" className="block text-slate-400 text-sm mb-1">
                             Frete <span className="text-slate-600"></span>
                           </label>
-                          <input id="Frete" placeholder="Frete" value={form.frete} onChange={e => setForm({ ...form, volumes: e.target.value })} className={inputClass} />
+                          <input id="Frete" inputMode="numeric" placeholder="Frete" value={form.frete} onChange={e => setForm({ ...form, frete: formatCurrencyInput(e.target.value) })} className={inputClass} />
                         </div>
                       </div>
                       <div className="flex gap-2 justify-end">

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { criarMotorista } from "../../api/motoristaApi"
-import { formatCPF, formatTelefone, removeMascara } from "../../utils/format"
+import { currencyInputToNumber, formatCPF, formatCurrencyInput, formatTelefone, removeMascara } from "../../utils/format"
 import toast from "react-hot-toast"
 
 type Props = {
@@ -39,7 +39,7 @@ export function MotoristaForm({ onCadastrado }: Props) {
         apelido,
         cpf: removeMascara(cpf),
         telefone: removeMascara(telefone),
-        valorDiaria: valorDiaria ? parseFloat(valorDiaria) : 0
+        valorDiaria: valorDiaria ? currencyInputToNumber(valorDiaria) : 0
       })
 
       toast.success("Motorista cadastrado!")
@@ -89,7 +89,7 @@ export function MotoristaForm({ onCadastrado }: Props) {
         </div>
         <div>
           <label className="block text-slate-400 text-sm mb-1">Valor Diaria</label>
-          <input type="number" step="0.01" value={valorDiaria} onChange={e => setValorDiaria(e.target.value)}
+          <input inputMode="numeric" value={valorDiaria} onChange={e => setValorDiaria(formatCurrencyInput(e.target.value))}
             className="bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 w-full" />
         </div>
       </div>

@@ -28,3 +28,22 @@ export function formatTelefone(telefone: string): string {
 export function removeMascara(valor: string): string {
   return valor.replace(/\D/g, "")
 }
+
+export function formatCurrencyBRL(valor?: number | null): string {
+  return (valor ?? 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
+export function currencyInputToNumber(valor: string): number {
+  const numeros = removeMascara(valor)
+  return numeros ? Number(numeros) / 100 : 0
+}
+
+export function formatCurrencyInput(valor: string | number): string {
+  const numero = typeof valor === "number" ? valor : currencyInputToNumber(valor)
+  return formatCurrencyBRL(numero)
+}

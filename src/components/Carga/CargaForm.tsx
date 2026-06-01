@@ -3,6 +3,7 @@ import { criarCarga } from "../../api/cargaApi"
 import { MotoristaAutocomplete } from "../Motorista/MotoristaAutocomplete"
 import { VeiculoAutocomplete } from "../Veiculo/VeiculoAutocomplete"
 import toast from "react-hot-toast"
+import { getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
   onCadastrado?: () => void
@@ -42,8 +43,8 @@ export function CargaForm({ onCadastrado }: Props) {
       toast.success(`Carga #${novaCarga.numeroRota} criada!`)
       handleFechar()
       onCadastrado?.()
-    } catch {
-      toast.error("Erro ao cadastrar carga")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao cadastrar carga"))
     } finally {
       setLoading(false)
     }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { listarClientes } from "../../api/clienteApi"
 import type { Cliente } from "../../types/Cliente"
 

@@ -1,5 +1,5 @@
 import type { Cliente, CriarClienteDTO } from "../types/Cliente"
-import { authHeader } from "./http"
+import { apiError, authHeader } from "./http"
 
 const API_BASE = "http://localhost:8080/api/clientes"
 
@@ -9,7 +9,7 @@ export async function criarCliente(dto: CriarClienteDTO): Promise<Cliente> {
     headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
-  if (!response.ok) throw new Error("Erro ao cadastrar o cliente")
+  if (!response.ok) throw await apiError(response, "Erro ao cadastrar o cliente")
   return response.json()
 }
 
@@ -19,13 +19,13 @@ export async function atualizarCliente(id: number, dto: CriarClienteDTO): Promis
     headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
-  if (!response.ok) throw new Error("Erro ao atualizar cliente")
+  if (!response.ok) throw await apiError(response, "Erro ao atualizar cliente")
   return response.json()
 }
 
 export async function listarClientes(): Promise<Cliente[]> {
   const response = await fetch(API_BASE, { headers: { ...authHeader() } })
-  if (!response.ok) throw new Error("Erro ao listar os clientes")
+  if (!response.ok) throw await apiError(response, "Erro ao listar os clientes")
   return response.json()
 }
 
@@ -34,5 +34,5 @@ export async function deletarCliente(id: number): Promise<void> {
     method: "DELETE",
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao deletar cliente")
+  if (!response.ok) throw await apiError(response, "Erro ao deletar cliente")
 }

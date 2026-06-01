@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { buscarFaturamento, baixarFaturamentoExcel } from "../../api/faturamentoApi"
 import type { FaturamentoCliente } from "../../types/Faturamento"
 import toast from "react-hot-toast"
+import { formatCurrencyBRL } from "../../utils/format"
 
 export function FaturamentoTable() {
   const [dados, setDados] = useState<FaturamentoCliente[]>([])
@@ -89,7 +90,7 @@ export function FaturamentoTable() {
         <div className="ml-auto text-right">
           <div className="text-slate-400 text-sm">{totalGeral} notas</div>
           <div className="text-cyan-400 font-semibold">
-            R$ {dados.reduce((acc, d) => acc + d.totalFrete, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            {formatCurrencyBRL(dados.reduce((acc, d) => acc + d.totalFrete, 0))}
           </div>
         </div>
       </div>
@@ -129,7 +130,7 @@ export function FaturamentoTable() {
 
                     <div className="text-center">
                       <div className="text-cyan-400 font-bold text-lg">
-                        R$ {d.totalFrete.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                        {formatCurrencyBRL(d.totalFrete)}
                       </div>
                       <div className="text-slate-500 text-xs">frete</div>
                     </div>
@@ -163,7 +164,7 @@ export function FaturamentoTable() {
                             <td className="py-2 text-white text-sm">{c.cidade || "—"}</td>
                             <td className="py-2 text-center text-orange-400 font-semibold">{c.totalNotas}</td>
                             <td className="py-2 text-center text-cyan-300">
-                              R$ {c.totalFrete.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                              {formatCurrencyBRL(c.totalFrete)}
                             </td>
                             <td className="py-2 text-right text-slate-400 text-sm">
                               {d.totalNotas > 0 ? ((c.totalNotas / d.totalNotas) * 100).toFixed(1) : 0}%
@@ -182,7 +183,7 @@ export function FaturamentoTable() {
                         </span>
                         <span>
                           <strong className="text-cyan-400">
-                            R$ {d.totalFrete.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                            {formatCurrencyBRL(d.totalFrete)}
                           </strong>
                         </span>
                       </div>

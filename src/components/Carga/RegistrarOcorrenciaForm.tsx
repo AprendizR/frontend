@@ -2,6 +2,7 @@ import { useState } from "react"
 import { registrarOcorrencia } from "../../api/ocorrenciaApi"
 import type { SubtipoOcorrencia } from "../../types/Ocorrencias"
 import toast from "react-hot-toast"
+import { getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
   onRegistrado?: () => void
@@ -22,7 +23,7 @@ export function RegistrarOcorrenciaForm({ onRegistrado }: Props) {
       await registrarOcorrencia({
         ordemServico: parseInt(ordemServico),
         subtipo,
-        nomeRecebedor: nomeRecebedor || undefined,
+        nomeRecebedor,
         observacao: observacao || undefined
       })
 
@@ -34,7 +35,7 @@ export function RegistrarOcorrenciaForm({ onRegistrado }: Props) {
       
       onRegistrado?.()
     } catch (error) {
-      toast.error("Erro ao registrar ocorrência")
+      toast.error(getErrorMessage(error, "Erro ao registrar ocorrência"))
     } finally {
       setLoading(false)
     }

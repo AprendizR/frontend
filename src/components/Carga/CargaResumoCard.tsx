@@ -9,6 +9,7 @@ import { VeiculoAutocomplete } from "../Veiculo/VeiculoAutocomplete"
 import { baixarRomaneio } from "../../api/cargaApi"
 import { roteirizar } from "../../api/cargaApi"
 import toast from "react-hot-toast"
+import { confirmAction, getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
   carga: CargaResumo
@@ -34,8 +35,8 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
       const detalhada = await buscarCargaDetalhada(carga.id)
       setCargaDetalhada(detalhada)
       setAberto(true)
-    } catch {
-      toast.error("Erro ao carregar detalhes da carga")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao carregar detalhes da carga"))
     } finally {
       setLoading(false)
     }
@@ -47,8 +48,8 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
       const detalhada = await buscarCargaDetalhada(carga.id)
       console.log("notas:", detalhada.notasFiscais.map(n => ({ os: n.ordemServico, ordem: n.ordemEntrega })))
       setCargaDetalhada(detalhada)
-    } catch {
-      toast.error("Erro ao atualizar detalhes")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao atualizar detalhes"))
     }
   }
 
@@ -57,19 +58,24 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
       await excluirNotaDaCarga(carga.id, notaId)
       toast.success("Nota excluída!")
       recarregarDetalhes()
-    } catch {
-      toast.error("Erro ao excluir nota")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao excluir nota"))
     }
   }
 
   async function handleExcluirCarga() {
-    if (!confirm(`Deseja excluir a Carga #${carga.numeroRota}? As notas serão desvinculadas.`)) return
+    const confirmou = await confirmAction({
+      title: `Excluir carga #${carga.numeroRota}?`,
+      text: "As notas vinculadas serão desvinculadas desta carga.",
+      confirmButtonText: "Excluir",
+    })
+    if (!confirmou) return
     try {
       await excluirCarga(carga.id)
       toast.success(`Carga #${carga.numeroRota} excluída!`)
       onAtualizar?.()
-    } catch {
-      toast.error("Erro ao excluir carga")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao excluir carga"))
     }
   }
 
@@ -79,8 +85,8 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
       toast.success("Carga atualizada!")
       setEditando(false)
       onAtualizar?.()
-    } catch {
-      toast.error("Erro ao atualizar carga")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao atualizar carga"))
     }
   }
 
@@ -88,8 +94,8 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
     try {
       await baixarRomaneio(carga.id)
       toast.success("Romaneio gerado!")
-    } catch {
-      toast.error("Erro ao gerar romaneio")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao gerar romaneio"))
     }
   }
 
@@ -99,8 +105,8 @@ export function CargaResumoCard({ carga, onAtualizar }: Props) {
       toast.success("Rota otimizada!")
       await recarregarDetalhes()
       onAtualizar?.()
-    } catch {
-      toast.error("Erro ao roteirizar")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao roteirizar"))
     }
   }
   const notasOrdenadas = [...(cargaDetalhada?.notasFiscais ?? [])].sort((a, b) => {

@@ -4,6 +4,7 @@ import type { Veiculo } from "../../types/Veiculo"
 import type { CriarVeiculoDTO } from "../../types/Veiculo"
 import { atualizarVeiculo, deletarVeiculo } from "../../api/veiculoApi"
 import toast from "react-hot-toast"
+import { confirmAction, getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
   veiculos: Veiculo[]
@@ -23,22 +24,27 @@ export function VeiculoList({ veiculos, onAtualizado }: Props) {
     if (!editando) return
     try {
       await atualizarVeiculo(editando.id, form)
-      toast.success("Cliente atualizado")
+      toast.success("Veículo atualizado")
       setEditando(null)
       onAtualizado()
-    } catch {
-      toast.error("Erro ao atualizar veiculo")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao atualizar veículo"))
     }
   }
 
   async function handleDeletar(id: number) {
-    if (!confirm("Deseja deletar este veiculo?")) return
+    const confirmou = await confirmAction({
+      title: "Excluir veículo?",
+      text: "Esta ação removerá o veículo do cadastro.",
+      confirmButtonText: "Excluir",
+    })
+    if (!confirmou) return
     try {
       await deletarVeiculo(id)
       toast.success("Veículo deletado")
       onAtualizado()
-    } catch {
-      toast.error("Erro ao excluir veiculo")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao excluir veículo"))
     }
   }
 

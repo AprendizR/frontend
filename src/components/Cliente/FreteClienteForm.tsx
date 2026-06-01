@@ -2,6 +2,8 @@ import { useState, useEffect } from "react"
 import { listarFretesPorCliente, salvarFrete, deletarFrete } from "../../api/freteApi"
 import type { FreteCliente } from "../../types/Frete"
 import toast from "react-hot-toast"
+import { confirmAction } from "../../utils/sweetAlertToast"
+import { currencyInputToNumber, formatCurrencyBRL, formatCurrencyInput } from "../../utils/format"
 
 type Props = {
   clienteId: number
@@ -31,7 +33,7 @@ export function FreteClienteForm({ clienteId, clienteNome }: Props) {
     if (!cidade.trim() || !valor) { toast.error("Preencha cidade e valor"); return }
     setLoading(true)
     try {
-      await salvarFrete({ clienteId, cidade, valor: parseFloat(valor) })
+      await salvarFrete({ clienteId, cidade, valor: currencyInputToNumber(valor) })
       toast.success("Frete salvo!")
       setCidade("")
       setValor("")
@@ -44,7 +46,12 @@ export function FreteClienteForm({ clienteId, clienteNome }: Props) {
   }
 
   async function handleDeletar(id: number) {
-    if (!confirm("Deseja excluir este frete?")) return
+    const confirmou = await confirmAction({
+      title: "Excluir frete?",
+      text: "Esta ação removerá o frete cadastrado para este cliente.",
+      confirmButtonText: "Excluir",
+    })
+    if (!confirmou) return
     try {
       await deletarFrete(id)
       toast.success("Frete excluído!")
@@ -62,7 +69,7 @@ export function FreteClienteForm({ clienteId, clienteNome }: Props) {
 
       <div className="grid grid-cols-3 gap-2 mb-3">
         <input placeholder="Cidade" value={cidade} onChange={e => setCidade(e.target.value)} className={inputClass} />
-        <input type="number" step="0.01" placeholder="Valor R$" value={valor} onChange={e => setValor(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSalvar()}
+        <input inputMode="numeric" placeholder="Valor R$" value={valor} onChange={e => setValor(formatCurrencyInput(e.target.value))} onKeyDown={e => e.key === "Enter" && handleSalvar()}
           className={inputClass} />
         <button onClick={handleSalvar} disabled={loading}
           className="px-3 py-1.5 text-sm bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg transition-colors">
@@ -79,7 +86,7 @@ export function FreteClienteForm({ clienteId, clienteNome }: Props) {
               <span className="text-slate-300 text-sm">{f.cidade}</span>
               <div className="flex items-center gap-3">
                 <span className="text-orange-400 text-sm font-semibold">
-                  R$ {f.valor.toFixed(2)}
+                  {formatCurrencyBRL(f.valor)}
                 </span>
                 <button onClick={() => handleDeletar(f.id)}
                   className="text-red-400 hover:text-red-300 text-xs transition-colors">✕</button>

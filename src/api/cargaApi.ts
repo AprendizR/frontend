@@ -1,6 +1,6 @@
 import type { Carga, CargaResumo, CargaDetalhada, CriarCargaDTO, FiltrosCarga } from "../types/Carga"
 import type { PageResponse } from "../types/Page"
-import { authHeader } from "./http"
+import { apiError, authHeader } from "./http"
 
 const API_BASE = "http://localhost:8080/api/cargas"
 
@@ -10,7 +10,7 @@ export async function criarCarga(dto: CriarCargaDTO): Promise<Carga> {
     headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
-  if (!response.ok) throw new Error("Erro ao criar carga")
+  if (!response.ok) throw await apiError(response, "Erro ao criar carga")
   return response.json()
 }
 
@@ -20,7 +20,7 @@ export async function atualizarCarga(id: number, dto: CriarCargaDTO): Promise<Ca
     headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
-  if (!response.ok) throw new Error("Erro ao atualizar carga")
+  if (!response.ok) throw await apiError(response, "Erro ao atualizar carga")
   return response.json()
 }
 
@@ -29,7 +29,7 @@ export async function adicionarNotaNaCarga(cargaId: number, notaId: number): Pro
     method: "POST",
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao adicionar nota na carga")
+  if (!response.ok) throw await apiError(response, "Erro ao adicionar nota na carga")
 }
 
 export async function adicionarNotasNaCarga(cargaId: number, notasIds: number[]): Promise<void> {
@@ -43,14 +43,14 @@ export async function excluirNotaDaCarga(cargaId: number, notaId: number): Promi
     method: "DELETE",
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao excluir nota da carga")
+  if (!response.ok) throw await apiError(response, "Erro ao excluir nota da carga")
 }
 
 export async function buscarCargaDetalhada(id: number): Promise<CargaDetalhada> {
   const response = await fetch(`${API_BASE}/${id}`, {
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao buscar carga detalhada")
+  if (!response.ok) throw await apiError(response, "Erro ao buscar carga detalhada")
   return response.json()
 }
 
@@ -67,7 +67,7 @@ export async function buscarCargas(filtros: FiltrosCarga = {}): Promise<PageResp
   const response = await fetch(`${API_BASE}?${params.toString()}`, {
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao buscar cargas")
+  if (!response.ok) throw await apiError(response, "Erro ao buscar cargas")
   return response.json()
 }
 
@@ -76,14 +76,14 @@ export async function excluirCarga(id: number): Promise<void> {
     method: "DELETE",
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao excluir carga")
+  if (!response.ok) throw await apiError(response, "Erro ao excluir carga")
 }
 
 export async function baixarRomaneio(id: number): Promise<void> {
   const response = await fetch(`${API_BASE}/${id}/romaneio`, {
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao gerar romaneio")
+  if (!response.ok) throw await apiError(response, "Erro ao gerar romaneio")
 
   const blob = await response.blob()
   const url = URL.createObjectURL(blob)
@@ -99,5 +99,5 @@ export async function roteirizar(id: number): Promise<void> {
     method: "POST",
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao roteirizar")
+  if (!response.ok) throw await apiError(response, "Erro ao roteirizar")
 }

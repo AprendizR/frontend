@@ -2,6 +2,7 @@ import { useState } from "react"
 import { criarCliente } from "../../api/clienteApi"
 import { useCep } from "../../utils/useCep"
 import { useCnpj } from "../../utils/useCnpj"
+import toast, { getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
   onCadastrado: () => void
@@ -9,8 +10,6 @@ type Props = {
 
 export function ClienteForm({ onCadastrado }: Props) {
   const [nome, setNome] = useState("")
-  const [sucesso, setSucesso] = useState("")
-  const [erro, setErro] = useState("")
   const { cep, setCep, cidade, setCidade, endereco, setEndereco, bairro, setBairro, erroCep, consultarCep, resetCep } = useCep()
   const { cnpj, setCnpj, erroCnpj, carregando, consultarCnpj, resetCnpj } = useCnpj()
 
@@ -34,8 +33,6 @@ export function ClienteForm({ onCadastrado }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setErro("")
-    setSucesso("")
 
     try {
       await criarCliente({ cnpj, nome, cep, cidade, endereco, bairro })
@@ -43,10 +40,10 @@ export function ClienteForm({ onCadastrado }: Props) {
       setNome("")
       resetCep()
       resetCnpj()
-      setSucesso("Cliente cadastrado com sucesso!")
+      toast.success("Cliente cadastrado com sucesso!")
       onCadastrado()
-    } catch {
-      setErro("Erro ao cadastrar o cliente")
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao cadastrar o cliente"))
     }
   }
 
@@ -94,8 +91,6 @@ export function ClienteForm({ onCadastrado }: Props) {
         Cadastrar
       </button>
 
-      {sucesso && <p className="text-green-400 mt-3 text-sm">{sucesso}</p>}
-      {erro && <p className="text-red-400 mt-3 text-sm">{erro}</p>}
     </form>
   )
 }

@@ -4,6 +4,7 @@ import { ClienteAutocomplete } from "../Cliente/ClienteAutocomplete"
 import { buscarFrete } from "../../api/freteApi"
 import toast from "react-hot-toast"
 import { useCep } from "../../utils/useCep"
+import { currencyInputToNumber, formatCurrencyBRL, formatCurrencyInput } from "../../utils/format"
 
 type Props = {
   onCadastrado: () => void
@@ -31,8 +32,8 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
     try {
       const resultado = await buscarFrete(Number(cid), cidadeNome)
       if (resultado) {
-        setFrete(String(resultado.valor))
-        toast.success(`Frete R$ ${resultado.valor.toFixed(2)} preenchido automaticamente!`)
+        setFrete(formatCurrencyInput(resultado.valor))
+        toast.success(`Frete ${formatCurrencyBRL(resultado.valor)} preenchido automaticamente!`)
       }
     } catch {}
   }
@@ -50,8 +51,8 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
         cep,
         cidade,
         endereco,
-        frete: frete ? parseFloat(frete) : undefined,
-        valor: valor ? parseFloat(valor) : undefined,
+        frete: frete ? currencyInputToNumber(frete) : undefined,
+        valor: valor ? currencyInputToNumber(valor) : undefined,
         volumes: volumes ? parseInt(volumes) : undefined,
         latitude: coordenadas?.lat,
         longitude: coordenadas?.lng,
@@ -154,12 +155,12 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
 
         <div>
           <label className="block text-slate-400  mb-1">Frete</label>
-          <input type="number" step="0.01" value={frete} onChange={e => setFrete(e.target.value)} className={inputClass} />
+          <input inputMode="numeric" value={frete} onChange={e => setFrete(formatCurrencyInput(e.target.value))} className={inputClass} />
         </div>
 
         <div>
           <label className="block text-slate-400  mb-1">Valor <span className="text-slate-600">(opcional)</span></label>
-          <input type="number" step="0.01" value={valor} onChange={e => setValor(e.target.value)} className={inputClass} />
+          <input inputMode="numeric" value={valor} onChange={e => setValor(formatCurrencyInput(e.target.value))} className={inputClass} />
         </div>
 
         <div>

@@ -3,6 +3,8 @@ import type { FolhaMotorista, CriarMotoristaDTO } from "../../types/Motorista"
 import { buscarFolha, listarMotoristas, atualizarMotorista, deletarMotorista } from "../../api/motoristaApi"
 import toast from "react-hot-toast"
 import { authHeader } from "../../api/http"
+import { confirmAction } from "../../utils/sweetAlertToast"
+import { currencyInputToNumber, formatCurrencyInput } from "../../utils/format"
 
 const API_BASE = "http://localhost:8080/api/motoristas"
 
@@ -98,7 +100,12 @@ export function FolhaTable() {
   }
 
   async function handleDeletar(id: number) {
-    if (!confirm("Deseja excluir este motorista?")) return
+    const confirmou = await confirmAction({
+      title: "Excluir motorista?",
+      text: "Esta ação removerá o motorista do cadastro.",
+      confirmButtonText: "Excluir",
+    })
+    if (!confirmou) return
     try {
       await deletarMotorista(id)
       toast.success("Motorista excluído!")
@@ -186,7 +193,7 @@ export function FolhaTable() {
                             <div className="space-y-1"><label className="text-[10px] text-slate-500 ml-1">Telefone</label><input value={form.telefone} onChange={e => setForm({ ...form, telefone: e.target.value })} className={inputClass} /></div>
                             <div className="space-y-1">
                               <label className="text-[10px] text-slate-500 ml-1">Valor Diária</label>
-                              <input type="number" step="0.01" value={form.valorDiaria} onChange={e => setForm({ ...form, valorDiaria: parseFloat(e.target.value) || 0 })} className={inputClass} />
+                              <input inputMode="numeric" value={formatCurrencyInput(form.valorDiaria)} onChange={e => setForm({ ...form, valorDiaria: currencyInputToNumber(e.target.value) })} className={inputClass} />
                             </div>
                           </div>
                           <div className="flex justify-end gap-3 mt-4">

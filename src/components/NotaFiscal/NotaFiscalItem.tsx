@@ -5,6 +5,7 @@ import type { NotaFiscalResumo } from "../../types/Carga"
 import type { SubtipoOcorrencia, Ocorrencia } from "../../types/Ocorrencias"
 import { gerarRelatorio } from "../../api/notaFiscalApi"
 import toast from "react-hot-toast"
+import { confirmAction } from "../../utils/sweetAlertToast"
 
 type Props = {
     nota: NotaFiscalResumo
@@ -63,7 +64,12 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
     }
 
     async function handleRemoverFoto(caminho: string) {
-        if (!confirm("Deseja remover esta foto?")) return
+        const confirmou = await confirmAction({
+            title: "Remover foto?",
+            text: "O comprovante selecionado será removido da nota.",
+            confirmButtonText: "Remover",
+        })
+        if (!confirmou) return
         try {
             await removerFoto(nota.id, caminho)
             setFotos(prev => prev.filter(f => f !== caminho))
