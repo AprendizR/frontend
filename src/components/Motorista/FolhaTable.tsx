@@ -2,7 +2,7 @@ import { useEffect, useState, Fragment } from "react"
 import type { FolhaMotorista, CriarMotoristaDTO } from "../../types/Motorista"
 import { buscarFolha, listarMotoristas, atualizarMotorista, deletarMotorista } from "../../api/motoristaApi"
 import toast from "react-hot-toast"
-import { authHeader } from "../../api/http"
+import { apiError, authHeader } from "../../api/http"
 import { confirmAction } from "../../utils/sweetAlertToast"
 import { currencyInputToNumber, formatCurrencyInput } from "../../utils/format"
 
@@ -87,7 +87,7 @@ export function FolhaTable() {
         method: "PUT",
         headers: { ...authHeader() }
       })
-      if (!response.ok) throw new Error()
+      if (!response.ok) throw await apiError(response, "Erro ao aplicar ajuste")
       toast.success("Ajustado com sucesso!")
       setEditando(null)
       setModoEdicao(null)

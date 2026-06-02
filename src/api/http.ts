@@ -1,9 +1,16 @@
+import { notifyAuthSessionExpired } from "../utils/authSession"
+
 export function authHeader(): HeadersInit {
   const token = localStorage.getItem("token")
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
 export async function apiError(response: Response, fallback: string): Promise<Error> {
+  if (response.status === 401) {
+    notifyAuthSessionExpired()
+    return new Error("Sessao expirada. Faca login novamente.")
+  }
+
   const data = await response.json().catch(() => null)
   const message =
     data?.message ||

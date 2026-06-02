@@ -1,4 +1,4 @@
-import { authHeader } from "./http"
+import { apiError, authHeader } from "./http"
 import type { FreteCliente } from "../types/Frete"
 
 const API_BASE = "http://localhost:8080/api/fretes"
@@ -11,7 +11,10 @@ export async function buscarFrete(clienteId: number, cidade: string): Promise<Fr
   const response = await fetch(`${API_BASE}?${params.toString()}`, {
     headers: { ...authHeader() }
   })
-  if (!response.ok) return null
+  if (!response.ok) {
+    if (response.status === 404) return null
+    throw await apiError(response, "Erro ao buscar frete")
+  }
   const data = await response.json()
   
   if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) return null
@@ -22,7 +25,7 @@ export async function listarFretesPorCliente(clienteId: number): Promise<FreteCl
   const response = await fetch(`${API_BASE}?clienteId=${clienteId}`, {
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao listar fretes")
+  if (!response.ok) throw await apiError(response, "Erro ao listar fretes")
   return response.json()
 }
 
@@ -32,7 +35,7 @@ export async function salvarFrete(dto: { clienteId: number, cidade: string, valo
     headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
-  if (!response.ok) throw new Error("Erro ao salvar frete")
+  if (!response.ok) throw await apiError(response, "Erro ao salvar frete")
   return response.json()
 }
 
@@ -41,5 +44,5 @@ export async function deletarFrete(id: number): Promise<void> {
     method: "DELETE",
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao deletar frete")
+  if (!response.ok) throw await apiError(response, "Erro ao deletar frete")
 }

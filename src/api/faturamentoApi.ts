@@ -1,5 +1,5 @@
 import type { FaturamentoCliente } from "../types/Faturamento"
-import { authHeader } from "./http"
+import { apiError, authHeader } from "./http"
 
 const API_BASE = "http://localhost:8080/api/faturamento"
 
@@ -11,7 +11,7 @@ export async function buscarFaturamento(dataInicio?: string, dataFim?: string): 
   const response = await fetch(`${API_BASE}?${params.toString()}`, {
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao buscar faturamento")
+  if (!response.ok) throw await apiError(response, "Erro ao buscar faturamento")
   return response.json()
 }
 
@@ -24,7 +24,7 @@ export async function baixarFaturamentoExcel(clienteId: number, dataInicio?: str
   const response = await fetch(`${API_BASE}/excel?${params.toString()}`, {
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao gerar Excel")
+  if (!response.ok) throw await apiError(response, "Erro ao gerar Excel")
 
   const blob = await response.blob()
   const url = URL.createObjectURL(blob)

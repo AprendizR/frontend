@@ -1,5 +1,5 @@
 import type { Ocorrencia, CriarOcorrenciaDTO } from "../types/Ocorrencias"
-import { authHeader } from "./http"
+import { apiError, authHeader } from "./http"
 
 const API_BASE = "http://localhost:8080/api/ocorrencias"
 
@@ -9,7 +9,7 @@ export async function registrarOcorrencia(dto: CriarOcorrenciaDTO): Promise<Ocor
     headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(dto)
   })
-  if (!response.ok) throw new Error("Erro ao registrar ocorrência")
+  if (!response.ok) throw await apiError(response, "Erro ao registrar ocorrencia")
   return response.json()
 }
 
@@ -17,6 +17,6 @@ export async function listarOcorrenciasPorOS(ordemServico: number): Promise<Ocor
   const response = await fetch(`${API_BASE}/os/${ordemServico}`, {
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao buscar ocorrências")
+  if (!response.ok) throw await apiError(response, "Erro ao buscar ocorrencias")
   return response.json()
 }

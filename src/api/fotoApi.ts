@@ -1,4 +1,4 @@
-import { authHeader } from "./http"
+import { apiError, authHeader } from "./http"
 
 const API_BASE = "http://localhost:8080/api/notas-fiscais"
 
@@ -10,7 +10,7 @@ export async function uploadFoto(notaId: number, arquivo: File): Promise<void> {
     headers: { ...authHeader() },
     body: formData
   })
-  if (!response.ok) throw new Error("Erro ao fazer upload da foto")
+  if (!response.ok) throw await apiError(response, "Erro ao fazer upload da foto")
 }
 
 export async function removerFoto(notaId: number, caminho: string): Promise<void> {
@@ -18,7 +18,7 @@ export async function removerFoto(notaId: number, caminho: string): Promise<void
     method: "DELETE",
     headers: { ...authHeader() }
   })
-  if (!response.ok) throw new Error("Erro ao remover foto")
+  if (!response.ok) throw await apiError(response, "Erro ao remover foto")
 }
 
 export function urlFoto(notaId: number, caminho: string): string {
