@@ -27,10 +27,11 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
 
   const inputClass = "w-full bg-[#1e293b] text-white placeholder-slate-500 border border-[#334155] rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
 
-  async function buscarFreteAutomatico(cid: string, cidadeNome: string) {
+  async function buscarFreteAutomatico(cid: string, cidadeNome: string, valorAtual = valor) {
     if (!cid || !cidadeNome) return
     try {
-      const resultado = await buscarFrete(Number(cid), cidadeNome)
+      const valorNota = valorAtual ? currencyInputToNumber(valorAtual) : undefined
+      const resultado = await buscarFrete(Number(cid), cidadeNome, valorNota)
       if (resultado) {
         setFrete(formatCurrencyInput(resultado.valor))
         toast.success(`Frete ${formatCurrencyBRL(resultado.valor)} preenchido automaticamente!`)
@@ -90,7 +91,11 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
           <label className="block text-slate-400  mb-1">Cliente</label>
           <ClienteAutocomplete value={clienteNome}
             onChange={v => { setClienteNome(v); setClienteId(undefined) }}
-            onSelect={c => { setClienteId(c.id); setClienteNome(c.nome) }}
+            onSelect={async c => {
+              setClienteId(c.id)
+              setClienteNome(c.nome)
+              if (cidade) await buscarFreteAutomatico(String(c.id), cidade)
+            }}
             className={inputClass} />
         </div>
 
@@ -160,7 +165,14 @@ export function NotaFiscalForm({ onCadastrado }: Props) {
 
         <div>
           <label className="block text-slate-400  mb-1">Valor <span className="text-slate-600">(opcional)</span></label>
-          <input inputMode="numeric" value={valor} onChange={e => setValor(formatCurrencyInput(e.target.value))} className={inputClass} />
+          <input inputMode="numeric" value={valor}
+            onChange={e => setValor(formatCurrencyInput(e.target.value))}
+            onBlur={async () => {
+              if (clienteId && cidade) {
+                await buscarFreteAutomatico(String(clienteId), cidade)
+              }
+            }}
+            className={inputClass} />
         </div>
 
         <div>

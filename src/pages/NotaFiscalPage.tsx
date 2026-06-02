@@ -10,13 +10,13 @@ export function NotaFiscalPage() {
   const [notaFiscal, setNotaFiscal] = useState<NotaFiscal[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
-  const [filtros, setFiltros] = useState<FiltrosNotasFiscais>({ page: 0, size: 10 })
+  const [filtros, setFiltros] = useState<FiltrosNotasFiscais>({ page: 0, size: 10, sort: "dataCriacao,desc" })
   const [filtroAberto, setFiltroAberto] = useState(false)
 
   async function carregarNotas(f: FiltrosNotasFiscais = filtros) {
     try {
       const dados = await buscarNotasFiscais(f)
-      setNotaFiscal(dados.content)
+      setNotaFiscal(ordenarPorCriacao(dados.content))
       setTotalPages(dados.page.totalPages)
       setTotalElements(dados.page.totalElements)
     } catch {
@@ -38,6 +38,22 @@ export function NotaFiscalPage() {
     carregarNotas(atualizado)
   }
 
+  function handleNotaCadastrada() {
+    const atualizado = { ...filtros, page: 0 }
+    setFiltros(atualizado)
+    carregarNotas(atualizado)
+  }
+
+  function handleBaixaCancelada(id: number) {
+    setNotaFiscal(notas =>
+      ordenarPorCriacao(notas.map(nota =>
+        nota.id === id
+          ? { ...nota, status: "PENDENTE" }
+          : nota
+      ))
+    )
+  }
+
   return (
     <div className="px-6 py-8">
       <div className="flex justify-between items-center mb-6">
@@ -47,7 +63,7 @@ export function NotaFiscalPage() {
 
       {/* Form de cadastro — ocupa toda a largura */}
       <div className="mb-4">
-        <NotaFiscalForm onCadastrado={() => carregarNotas()} />
+        <NotaFiscalForm onCadastrado={handleNotaCadastrada} />
       </div>
 
       {/* Botão para abrir/fechar filtros */}
@@ -103,7 +119,7 @@ export function NotaFiscalPage() {
         </div>
       )}
 
-      <NotaFiscalList notaFiscal={notaFiscal} onAtualizado={() => carregarNotas()} />
+      <NotaFiscalList notaFiscal={notaFiscal} onAtualizado={() => carregarNotas()} onBaixaCancelada={handleBaixaCancelada} />
 
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6">
@@ -116,4 +132,14 @@ export function NotaFiscalPage() {
       )}
     </div>
   )
+}
+
+function ordenarPorCriacao(notas: NotaFiscal[]) {
+  return [...notas].sort((a, b) => {
+    const dataA = a.dataCriacao ? new Date(a.dataCriacao).getTime() : 0
+    const dataB = b.dataCriacao ? new Date(b.dataCriacao).getTime() : 0
+
+    if (dataA !== dataB) return dataB - dataA
+    return b.id - a.id
+  })
 }

@@ -2,7 +2,7 @@ import { useState, Fragment, useRef } from "react"
 import type { NotaFiscal } from "../../types/NotaFiscal"
 import { atualizarNota, deletarNota } from "../../api/notaFiscalApi"
 import { uploadFoto, removerFoto, urlFoto } from "../../api/fotoApi"
-import { gerarRelatorio } from "../../api/notaFiscalApi"
+import { gerarRelatorio, cancelarBaixa } from "../../api/notaFiscalApi"
 import toast from "react-hot-toast"
 import { confirmAction, getErrorMessage } from "../../utils/sweetAlertToast"
 import { currencyInputToNumber, formatCurrencyBRL, formatCurrencyInput } from "../../utils/format"
@@ -21,11 +21,12 @@ type EditarNota = {
 type Props = {
   notaFiscal: NotaFiscal[]
   onAtualizado: () => void
+  onBaixaCancelada?: (id: number) => void
 }
 
-export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
+export function NotaFiscalList({ notaFiscal, onAtualizado, onBaixaCancelada }: Props) {
   const [editando, setEditando] = useState<NotaFiscal | null>(null)
-  const [form, setForm] = useState<EditarNota>({ numero: "", remetente: "", destinatario: "", cidade: "", endereco: "", valor: "", volumes: "", frete:"" })
+  const [form, setForm] = useState<EditarNota>({ numero: "", remetente: "", destinatario: "", cidade: "", endereco: "", valor: "", volumes: "", frete: "" })
   const [verFoto, setVerFoto] = useState<number | null>(null)
   const [uploadando, setUploadando] = useState<number | null>(null)
   const inputRefs = useRef<Record<number, HTMLInputElement | null>>({})
@@ -115,6 +116,23 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
     }
   }
 
+  async function handleCancelarBaixa(id: number) {
+    const confirmou = await confirmAction({
+      title: "Desfazer baixa?",
+      text: "O status da nota voltara para PENDENTE. O historico da baixa deve ser removido pelo backend.",
+      confirmButtonText: "Desfazer",
+    })
+    if (!confirmou) return
+
+    try {
+      await cancelarBaixa(id)
+      toast.success("Baixa cancelada!")
+      onBaixaCancelada?.(id)
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erro ao cancelar baixa"))
+    }
+  }
+
   if (notaFiscal.length === 0) {
     return <p className="text-slate-500">Nenhuma nota cadastrada</p>
   }
@@ -125,54 +143,66 @@ export function NotaFiscalList({ notaFiscal, onAtualizado }: Props) {
     <div>
       <h3 className="text-lg font-semibold text-white mb-4">Notas Cadastradas</h3>
       <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl overflow-hidden">
-        <table className="w-full">
+        <table className="w-full table-auto text-sm">
           <thead>
-            <tr className="border-b border-[#1e293b] text-slate-400 text-sm uppercase tracking-wider">
-              <th className="px-6 py-3 text-left">OS</th>
-              <th className="px-6 py-3 text-left">NF</th>
-              <th className="px-6 py-3 text-left">Destinatário</th>
-              <th className="px-6 py-3 text-left">Cidade</th>
-              <th className="px-6 py-3 text-left">Remetente</th>
-              <th className="px-6 py-3 text-left">Valor</th>
-              <th className="px-6 py-3 text-center">Status</th>
-              <th className="px-6 py-3 text-center">Fotos</th>
-              <th className="px-6 py-3 text-center">Ações</th>
+            <tr className="border-b border-[#1e293b] text-slate-400 text-xs uppercase tracking-wider">
+              <th className="px-4 py-2 text-left w-[90px]">OS</th>
+              <th className="px-4 py-2 text-left w-[70px]">NF</th>
+              <th className="px-4 py-2 text-left w-[180px]">Destinatário</th>
+              <th className="px-4 py-2 text-left w-[110px]">Cidade</th>
+              <th className="px-4 py-2 text-left w-[180px]">Remetente</th>
+              <th className="px-4 py-2 text-left w-[90px]">Valor</th>
+              <th className="px-4 py-2 text-center w-[90px]">Status</th>
+              <th className="px-4 py-2 text-center w-[100px]">Fotos</th>
+              <th className="px-4 py-2 text-center w-[120px]">Ações</th>
             </tr>
           </thead>
           <tbody>
             {notaFiscal.map((nf) => (
               <Fragment key={nf.id}>
                 <tr className="border-b border-[#1e293b] hover:bg-[#1e293b] transition-colors">
-                  <td className="px-6 py-3 text-white font-medium">{nf.ordemServico}</td>
-                  <td className="px-6 py-3 text-slate-300">{nf.numero}</td>
-                  <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.destinatario}>{nf.destinatario}</td>
-                  <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.cidade}>{nf.cidade}</td>
-                  <td className="px-6 py-3 text-slate-300 max-w-[250px] truncate" title={nf.remetente}>{nf.remetente}</td>
-                  <td className="px-6 py-3 text-slate-300">{formatCurrencyBRL(nf.valor)}</td>
-                  <td className="px-6 py-3 text-center">
-                    <span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(nf.status)}`}>{nf.status}</span>
+                  <td className="px-4 py-2 text-white font-medium" title={getUltimaAlteracaoTitle(nf)}>
+                    <div>{nf.ordemServico}</div>
+                    <div className="mt-1 text-[11px] font-normal text-slate-500 whitespace-nowrap">
+                      {getUltimaAlteracaoResumo(nf)}
+                    </div>
                   </td>
-                  <td className="px-6 py-3 text-center">
+                  <td className="px-4 py-2 text-slate-300">{nf.numero}</td>
+                  <td className="px-4 py-2 text-slate-300 max-w-[180px] truncate" title={nf.destinatario}>{nf.destinatario}</td>
+                  <td className="px-4 py-2 text-slate-300 max-w-[110px] truncate" title={nf.cidade}>{nf.cidade}</td>
+                  <td className="px-4 py-2 text-slate-300 max-w-[180px] truncate" title={nf.remetente}>{nf.remetente}</td>
+                  <td className="px-4 py-2 text-slate-300">{formatCurrencyBRL(nf.valor)}</td>
+                  <td className="px-4 py-2 text-center">
+                    <span className={`px-2 py-1 rounded text-[10px] font-semibold ${getStatusColor(nf.status)}`}>{nf.status}</span>
+                  </td>
+                  <td className="px-4 py-2 text-center">
                     <input ref={el => { inputRefs.current[nf.id] = el }} type="file" accept="image/*,application/pdf" className="hidden" onChange={e => handleUpload(nf, e)} />
-                    <div className="flex justify-center gap-1">
+                    <div className="flex justify-center gap-2">
                       {nf.fotos.length > 0 && (
                         <button onClick={() => setVerFoto(verFoto === nf.id ? null : nf.id)}
-                          className="px-3 py-1 text-xs border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all">
+                          className="px-3 py-1.5 text-xs border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all">
                           📷 {nf.fotos.length}
                         </button>
                       )}
                       <button onClick={() => inputRefs.current[nf.id]?.click()} disabled={uploadando === nf.id}
-                        className="px-3 py-1 text-xs border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
+                        className="px-3 py-1.5 text-xs border border-[#334155] rounded-md bg-transparent hover:bg-[#1e293b] text-slate-400 transition-all">
                         {uploadando === nf.id ? "..." : "📎"}
                       </button>
                     </div>
                   </td>
-                  <td className="px-6 py-3 text-center">
-                    <div className="flex justify-center gap-2">
+                  <td className="px-4 py-2 text-center">
+                    <div className="flex justify-center gap-2 flex-wrap">
+                      {nf.status !== "PENDENTE" && nf.status !== "EM_ROTA" && (
+                        <button onClick={() => handleCancelarBaixa(nf.id)}
+                          className="px-4 py-2 text-sm border border-yellow-500/30 rounded-md bg-transparent hover:bg-yellow-500/10 text-yellow-400 transition-all"
+                          title="Cancelar baixa">
+                          Cancelar
+                        </button>
+                      )}
                       <button onClick={() => abrirEdicao(nf)}
-                        className="px-3 py-1 border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all">✏️ Editar</button>
+                        className="px-4 py-2 text-sm border border-blue-500/30 rounded-md bg-transparent hover:bg-blue-500/10 text-blue-400 transition-all">Editar</button>
                       <button onClick={() => handleDeletar(nf.id)}
-                        className="px-3 py-1 border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">🗑️ Excluir</button>
+                        className="px-4 py-2 text-sm border border-red-500/30 rounded-md bg-transparent hover:bg-red-500/10 text-red-400 transition-all">Excluir</button>
                     </div>
                   </td>
                 </tr>
@@ -290,4 +320,31 @@ function getStatusColor(status: string): string {
     CANCELADA: "bg-red-500/20 text-red-400 border border-red-500/30",
   }
   return colors[status] || "bg-slate-500/20 text-slate-400"
+}
+
+function getUltimaAlteracaoTitle(nf: NotaFiscal): string {
+  const usuario = nf.ultimoUsuarioAlteracao ?? nf.usuarioAlteracao ?? nf.alteradoPor
+  if (!usuario && !nf.dataUltimaAlteracao) return `OS ${nf.ordemServico}`
+
+  const partes = []
+  if (usuario) partes.push(`por ${usuario}`)
+  if (nf.dataUltimaAlteracao) partes.push(`em ${formatDateTime(nf.dataUltimaAlteracao)}`)
+  return `Ultima alteracao ${partes.join(" ")}`
+}
+
+function getUltimaAlteracaoResumo(nf: NotaFiscal): string {
+  const usuario = nf.ultimoUsuarioAlteracao ?? nf.usuarioAlteracao ?? nf.alteradoPor
+  if (!usuario && !nf.dataUltimaAlteracao) return "Sem registro"
+  if (usuario && nf.dataUltimaAlteracao) return `${usuario} - ${formatDateTime(nf.dataUltimaAlteracao)}`
+  return usuario ?? formatDateTime(nf.dataUltimaAlteracao!)
+}
+
+function formatDateTime(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short"
+  }).format(date)
 }

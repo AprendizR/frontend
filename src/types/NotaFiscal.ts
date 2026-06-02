@@ -26,6 +26,11 @@ export type NotaFiscal = {
   volumes?: number
   status: StatusNota
   fotos: string[]
+  dataCriacao?: string
+  ultimoUsuarioAlteracao?: string
+  alteradoPor?: string
+  usuarioAlteracao?: string
+  dataUltimaAlteracao?: string
 }
 
 export type CriarNotaDTO = {
@@ -53,4 +58,5 @@ export type FiltrosNotasFiscais = {
   dataFim?: string
   page?: number
   size?: number
+  sort?: string
 }

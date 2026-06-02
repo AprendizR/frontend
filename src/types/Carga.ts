@@ -13,6 +13,10 @@ export interface NotaFiscalResumo {
   entregue: boolean
   fotos: string[]
   ordemEntrega?: number
+  ultimoUsuarioAlteracao?: string
+  alteradoPor?: string
+  usuarioAlteracao?: string
+  dataUltimaAlteracao?: string
 }
 
 export interface MotoristaResumo {

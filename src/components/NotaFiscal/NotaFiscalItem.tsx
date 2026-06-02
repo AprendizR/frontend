@@ -3,9 +3,9 @@ import { registrarOcorrencia, listarOcorrenciasPorOS } from "../../api/ocorrenci
 import { uploadFoto, removerFoto, urlFoto } from "../../api/fotoApi"
 import type { NotaFiscalResumo } from "../../types/Carga"
 import type { SubtipoOcorrencia, Ocorrencia } from "../../types/Ocorrencias"
-import { gerarRelatorio } from "../../api/notaFiscalApi"
+import { gerarRelatorio, cancelarBaixa } from "../../api/notaFiscalApi"
 import toast from "react-hot-toast"
-import { confirmAction } from "../../utils/sweetAlertToast"
+import { confirmAction, getErrorMessage } from "../../utils/sweetAlertToast"
 
 type Props = {
     nota: NotaFiscalResumo
@@ -29,19 +29,24 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
     const [uploadandoFoto, setUploadandoFoto] = useState(false)
 
     useEffect(() => {
-        if (nota.entregue && !ultimaOcorrencia) buscarUltimaOcorrencia()
+        if (nota.entregue) {
+            buscarOcorrenciasAtualizadas({ abrirHistorico: false })
+        } else {
+            setUltimaOcorrencia(null)
+            setOcorrencias([])
+            setExpandido(false)
+        }
     }, [nota.entregue])
 
-    async function buscarUltimaOcorrencia() {
+    async function buscarOcorrenciasAtualizadas({ abrirHistorico = expandido } = {}) {
         setCarregandoUltima(true)
         try {
             const dados = await listarOcorrenciasPorOS(nota.ordemServico)
-            if (dados.length > 0) {
-                const ordenadas = dados.sort((a, b) =>
-                    new Date(b.dataOcorrencia).getTime() - new Date(a.dataOcorrencia).getTime()
-                )
-                setUltimaOcorrencia(ordenadas[0])
-            }
+            const ordenadas = ordenarOcorrencias(dados)
+            setOcorrencias(ordenadas)
+            setUltimaOcorrencia(ordenadas[0] ?? null)
+            setExpandido(abrirHistorico)
+            return ordenadas
         } finally {
             setCarregandoUltima(false)
         }
@@ -99,10 +104,30 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
             setNomeRecebedor("")
             setObservacao("")
             setSubtipo("ENTREGA_COMPLETA")
-            await buscarUltimaOcorrencia()
+            await buscarOcorrenciasAtualizadas({ abrirHistorico: expandido })
             onAtualizar()
         } catch {
             toast.error("Erro ao registrar baixa")
+        }
+    }
+
+    async function handleCancelarBaixa() {
+        const confirmou = await confirmAction({
+            title: "Desfazer baixa?",
+            text: "O status da nota voltara para PENDENTE. O historico da baixa deve ser removido pelo backend.",
+            confirmButtonText: "Desfazer",
+        })
+        if (!confirmou) return
+
+        try {
+            await cancelarBaixa(nota.id)
+            setUltimaOcorrencia(null)
+            setOcorrencias([])
+            setExpandido(false)
+            toast.success("Baixa cancelada!")
+            onAtualizar()
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Erro ao cancelar baixa"))
         }
     }
 
@@ -116,12 +141,10 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
     }
 
     async function carregarOcorrencias() {
-        if (ocorrencias.length > 0) { setExpandido(!expandido); return }
+        if (expandido) { setExpandido(false); return }
         setCarregandoOcorrencias(true)
         try {
-            const dados = await listarOcorrenciasPorOS(nota.ordemServico)
-            setOcorrencias(dados)
-            setExpandido(true)
+            await buscarOcorrenciasAtualizadas({ abrirHistorico: true })
         } catch {
             toast.error("Erro ao carregar histórico")
         } finally {
@@ -145,12 +168,14 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                             #{nota.ordemEntrega}
                         </span>
                     )}
-                    <strong className="text-lg text-white">OS #{nota.ordemServico}</strong>
+                    <div title={getUltimaAlteracaoTitle(nota)}>
+                        <strong className="text-lg text-white">OS #{nota.ordemServico}</strong>
+                        <div className="mt-0.5 text-[11px] text-slate-500">{getUltimaAlteracaoResumo(nota)}</div>
+                    </div>
                     <span className="text-slate-600">|</span>
                     <span className="text-slate-400">NF: {nota.numero}</span>
                     <span className="text-slate-400">Destino {nota.destinatario}</span>
                     <strong className="text-lg text-white">Cidade: {nota.cidade}</strong>
-
                     {nota.entregue && (
                         carregandoUltima
                             ? <span className="px-2 py-1 bg-[#1e293b] text-slate-400 text-xs font-bold rounded">Carregando...</span>
@@ -164,8 +189,15 @@ export function NotaFiscalItem({ nota, onAtualizar, onExcluir }: Props) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <input ref={inputFotoRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleUploadFoto} />
+                    {nota.entregue && (
+                        <button type="button" onClick={handleCancelarBaixa}
+                            className="px-3 py-2 border border-yellow-500/30 rounded-md bg-transparent hover:bg-yellow-500/10 text-yellow-400 transition-all text-sm"
+                            title="Cancelar baixa">
+                            ↩️
+                        </button>
+                    )}
 
+                    <input ref={inputFotoRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleUploadFoto} />
                     {fotos.length > 0 && (
                         <button onClick={() => setVerFotos(!verFotos)}
                             className="px-3 py-2 text-sm border border-green-500/30 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all">
@@ -362,4 +394,37 @@ function formatSubtipoFull(subtipo: string): string {
         CANCELADA_PELO_CLIENTE: "❌ Cancelada pelo Cliente", CANCELADA_OPERACIONAL: "❌ Cancelada Operacional"
     }
     return labels[subtipo] || subtipo
+}
+
+function ordenarOcorrencias(ocorrencias: Ocorrencia[]) {
+    return [...ocorrencias].sort((a, b) =>
+        new Date(b.dataOcorrencia).getTime() - new Date(a.dataOcorrencia).getTime()
+    )
+}
+
+function getUltimaAlteracaoTitle(nota: NotaFiscalResumo): string {
+    const usuario = nota.ultimoUsuarioAlteracao ?? nota.usuarioAlteracao ?? nota.alteradoPor
+    if (!usuario && !nota.dataUltimaAlteracao) return `OS ${nota.ordemServico}`
+
+    const partes = []
+    if (usuario) partes.push(`por ${usuario}`)
+    if (nota.dataUltimaAlteracao) partes.push(`em ${formatDateTime(nota.dataUltimaAlteracao)}`)
+    return `Ultima alteracao ${partes.join(" ")}`
+}
+
+function getUltimaAlteracaoResumo(nota: NotaFiscalResumo): string {
+    const usuario = nota.ultimoUsuarioAlteracao ?? nota.usuarioAlteracao ?? nota.alteradoPor
+    if (!usuario && !nota.dataUltimaAlteracao) return "Sem registro"
+    if (usuario && nota.dataUltimaAlteracao) return `${usuario} - ${formatDateTime(nota.dataUltimaAlteracao)}`
+    return usuario ?? formatDateTime(nota.dataUltimaAlteracao!)
+}
+
+function formatDateTime(value: string): string {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return value
+
+    return new Intl.DateTimeFormat("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short"
+    }).format(date)
 }

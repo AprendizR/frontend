@@ -48,6 +48,7 @@ export async function buscarNotasFiscais(filtros: FiltrosNotasFiscais = {}): Pro
   if (filtros.dataFim) params.append("dataFim", filtros.dataFim)
   params.append("page", String(filtros.page ?? 0))
   params.append("size", String(filtros.size ?? 10))
+  params.append("sort", filtros.sort ?? "dataCriacao,desc")
 
   const response = await fetch(`${API_BASE}?${params.toString()}`, {
     headers: { ...authHeader() }
@@ -73,4 +74,12 @@ export async function gerarRelatorio(id: number): Promise<void> {
   const url = URL.createObjectURL(blob)
   window.open(url, "_blank")
   setTimeout(() => URL.revokeObjectURL(url), 10000)
+}
+
+export async function cancelarBaixa(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/${id}/cancelar-baixa`, {
+    method: "PUT",
+    headers: { ...authHeader() }
+  })
+  if (!response.ok) throw await apiError(response, "Erro ao cancelar baixa")
 }
