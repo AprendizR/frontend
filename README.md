@@ -17,12 +17,11 @@ Interface web para gerenciamento das operações de uma transportadora, consumin
 ## ⚙️ Funcionalidades
 
 - **Login** com autenticação JWT, integrado ao back-end
-- **Dashboard** com estatísticas gerais do sistema
 - **Clientes**: cadastro, listagem, autocomplete e vínculo de fretes
 - **Motoristas** e **Veículos**: cadastro, listagem, busca e autocomplete
-- **Notas Fiscais**: cadastro, upload de foto comprobatória, listagem com filtros
-- **Cargas**: criação vinculando motorista, veículo e notas fiscais; adição de notas a uma carga existente; registro de ocorrências
-- **Faturamento**: visualização em tabela dos dados consolidados vindos do back-end
+- **Notas Fiscais**: cadastro, upload de foto comprovatória, listagem com filtros
+- **Cargas**: criação vinculando motorista, veículo e notas fiscais, adição de notas a uma carga existente, registro de ocorrências das notas fiscais e das cargas
+- **Faturamento**: visualização em tabela dos dados consolidados vindos do back-end de cada cliente buscando quantas notas foram entregues em diversas cidades
 - **Portal do Cliente**: login e área separada para o cliente consultar suas próprias notas fiscais
 - Busca automática de endereço por **CEP** e validação de **CNPJ** via hooks customizados (`useCep`, `useCnpj`)
 
